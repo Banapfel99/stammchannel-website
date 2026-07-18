@@ -1,0 +1,89 @@
+<?php
+
+declare(strict_types=1);
+
+require __DIR__ . '/includes/auth.php';
+
+requireLogin();
+?>
+
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Stammchannel</title>
+
+    <link
+        rel="stylesheet"
+        href="/assets/css/style.css"
+    >
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="nav-brand">
+        Stammchannel
+    </div>
+
+    <div class="nav-links">
+
+        <span>
+            Hallo,
+            <?= htmlspecialchars($_SESSION['username']) ?>
+        </span>
+
+        <?php if (isAdmin()): ?>
+
+            <a href="/admin/">
+                Admin
+            </a>
+
+        <?php endif; ?>
+
+        <a href="/logout.php">
+            Abmelden
+        </a>
+
+    </div>
+
+</nav>
+
+<main class="content">
+
+    <h1>
+        Willkommen bei Stammchannel
+    </h1>
+
+    <p>
+        Du bist erfolgreich angemeldet.
+    </p>
+
+    <section class="server-card">
+
+        <h2>
+            Palworld
+        </h2>
+
+        <p>
+            Unser Palworld Community Server.
+        </p>
+
+        <div class="server-address">
+            stammchannel.de:8211
+        </div>
+
+    </section>
+
+</main>
+
+</body>
+</html>
