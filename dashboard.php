@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/includes/auth.php';
+require __DIR__ . '/includes/icons.php';
 
 requireLogin();
 ?>
@@ -71,7 +72,7 @@ requireLogin();
 
         <a class="widget-card" href="/music/">
 
-            <div class="widget-icon">🎵</div>
+            <div class="widget-icon"><?= icon('music') ?></div>
 
             <h3>Musik</h3>
 

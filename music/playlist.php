@@ -7,6 +7,7 @@ require __DIR__ . '/../includes/database.php';
 require __DIR__ . '/../includes/csrf.php';
 require __DIR__ . '/../includes/settings.php';
 require __DIR__ . '/../includes/music.php';
+require __DIR__ . '/../includes/icons.php';
 
 requireLogin();
 
@@ -157,16 +158,20 @@ $trackListJson = json_encode(array_map(
         <h2>Gemeinsam anhören</h2>
 
         <div class="now-playing">
+            <?= icon('headphones') ?>
             <span id="now-playing-title">Kein Titel ausgewählt</span>
         </div>
 
         <audio id="audio-element" preload="metadata"></audio>
 
         <div class="player-controls">
-            <button type="button" id="btn-shuffle" title="Shuffle">🔀</button>
-            <button type="button" id="btn-prev" title="Zurück">⏮</button>
-            <button type="button" id="btn-play" title="Play/Pause">▶️</button>
-            <button type="button" id="btn-next" title="Weiter">⏭</button>
+            <button type="button" id="btn-shuffle" title="Shuffle"><?= icon('shuffle') ?></button>
+            <button type="button" id="btn-prev" title="Zurück"><?= icon('prev') ?></button>
+            <button type="button" id="btn-play" title="Play/Pause">
+                <span class="icon-play"><?= icon('play') ?></span>
+                <span class="icon-pause"><?= icon('pause') ?></span>
+            </button>
+            <button type="button" id="btn-next" title="Weiter"><?= icon('next') ?></button>
         </div>
 
         <div class="player-progress">
@@ -206,11 +211,11 @@ $trackListJson = json_encode(array_map(
                                 alt=""
                             >
                         <?php else: ?>
-                            <div class="track-cover track-cover-placeholder">🎵</div>
+                            <div class="track-cover track-cover-placeholder"><?= icon('music') ?></div>
                         <?php endif; ?>
                     </td>
                     <td><?= htmlspecialchars($track['title']) ?></td>
-                    <td>Eigener Upload</td>
+                    <td><span class="badge badge-accent"><?= icon('upload') ?> Upload</span></td>
                     <td><?= htmlspecialchars($track['uploader_username']) ?></td>
                     <td><?= (int) $track['play_count'] ?></td>
                     <td>
@@ -244,7 +249,7 @@ $trackListJson = json_encode(array_map(
             <?php foreach ($spotifyLinks as $link): ?>
                 <tr>
                     <td>
-                        <div class="track-cover track-cover-placeholder spotify-icon">🟢</div>
+                        <div class="track-cover track-cover-placeholder spotify-icon"><?= icon('spotify') ?></div>
                     </td>
                     <td>
                         <a href="<?= htmlspecialchars($link['spotify_url']) ?>" target="_blank" rel="noopener noreferrer">
@@ -262,7 +267,7 @@ $trackListJson = json_encode(array_map(
                             ></iframe>
                         </details>
                     </td>
-                    <td>Spotify</td>
+                    <td><span class="badge badge-spotify"><?= icon('spotify') ?> Spotify</span></td>
                     <td><?= htmlspecialchars($link['added_by_username']) ?></td>
                     <td>–</td>
                     <td></td>

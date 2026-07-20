@@ -7,6 +7,7 @@ require __DIR__ . '/../includes/database.php';
 require __DIR__ . '/../includes/csrf.php';
 require __DIR__ . '/../includes/settings.php';
 require __DIR__ . '/../includes/music.php';
+require __DIR__ . '/../includes/icons.php';
 
 requireAdmin();
 

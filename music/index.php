@@ -7,6 +7,7 @@ require __DIR__ . '/../includes/database.php';
 require __DIR__ . '/../includes/csrf.php';
 require __DIR__ . '/../includes/settings.php';
 require __DIR__ . '/../includes/music.php';
+require __DIR__ . '/../includes/icons.php';
 
 requireLogin();
 
@@ -166,6 +167,8 @@ $playlists = $pdo->query(
                 class="widget-card playlist-card"
                 href="/music/playlist.php?id=<?= (int) $playlist['id'] ?>"
             >
+
+                <div class="widget-icon"><?= icon('music') ?></div>
 
                 <h3><?= htmlspecialchars($playlist['name']) ?></h3>
 

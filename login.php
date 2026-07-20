@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/database.php';
 require __DIR__ . '/includes/csrf.php';
+require __DIR__ . '/includes/icons.php';
 
 if (isLoggedIn()) {
     header('Location: /dashboard.php');
@@ -73,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-card">
 
     <div class="logo">
+        <?= icon('headphones', 'icon') ?>
         Stammchannel
     </div>
 

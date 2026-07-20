@@ -116,7 +116,7 @@
 
     audio.addEventListener('play', () => {
         isPlaying = true;
-        btnPlay.textContent = '⏸️';
+        btnPlay.classList.add('is-playing');
         recordPlayIfNeeded();
 
         if (!suppressSync) {
@@ -126,7 +126,7 @@
 
     audio.addEventListener('pause', () => {
         isPlaying = false;
-        btnPlay.textContent = '▶️';
+        btnPlay.classList.remove('is-playing');
 
         if (!suppressSync) {
             broadcastState();
