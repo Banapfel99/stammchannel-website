@@ -89,6 +89,9 @@ $trackListJson = json_encode(array_map(
         'id' => (int) $t['id'],
         'title' => $t['title'],
         'uploader' => $t['uploader_username'],
+        'cover' => $t['cover_filename'] !== null
+            ? '/music/file.php?type=cover&id=' . (int) $t['id']
+            : null,
     ],
     $tracks
 ), JSON_THROW_ON_ERROR);
@@ -153,32 +156,55 @@ $trackListJson = json_encode(array_map(
         <div class="success"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
 
-    <section class="admin-card music-player" id="music-player" data-playlist-id="<?= $playlistId ?>">
+    <section class="music-player-hero" id="music-player" data-playlist-id="<?= $playlistId ?>">
 
-        <h2>Gemeinsam anhören</h2>
-
-        <div class="now-playing">
-            <?= icon('headphones') ?>
-            <span id="now-playing-title">Kein Titel ausgewählt</span>
+        <div class="vinyl-stage">
+            <div class="vinyl-arm" id="vinyl-arm"></div>
+            <div class="vinyl-record" id="vinyl-record">
+                <img id="vinyl-cover" class="vinyl-cover-img" src="" alt="" hidden>
+                <div class="vinyl-grooves"></div>
+                <div class="vinyl-label" id="vinyl-label"><?= icon('music') ?></div>
+                <div class="vinyl-spindle"></div>
+            </div>
+            <div class="vinyl-glow"></div>
         </div>
 
-        <audio id="audio-element" preload="metadata"></audio>
+        <div class="player-info">
 
-        <div class="player-controls">
-            <button type="button" id="btn-shuffle" title="Shuffle"><?= icon('shuffle') ?></button>
-            <button type="button" id="btn-prev" title="Zurück"><?= icon('prev') ?></button>
-            <button type="button" id="btn-play" title="Play/Pause">
-                <span class="icon-play"><?= icon('play') ?></span>
-                <span class="icon-pause"><?= icon('pause') ?></span>
-            </button>
-            <button type="button" id="btn-next" title="Weiter"><?= icon('next') ?></button>
+            <div class="player-info-head">
+                <h2>Gemeinsam anhören</h2>
+                <div class="listeners" id="listeners-list" title="Hört gerade mit"></div>
+            </div>
+
+            <div class="now-playing">
+                <?= icon('headphones') ?>
+                <span id="now-playing-title">Kein Titel ausgewählt</span>
+            </div>
+
+            <audio id="audio-element" preload="metadata"></audio>
+
+            <div class="player-progress">
+                <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
+            </div>
+
+            <div class="player-controls">
+                <button type="button" id="btn-shuffle" title="Shuffle"><?= icon('shuffle') ?></button>
+                <button type="button" id="btn-prev" title="Zurück"><?= icon('prev') ?></button>
+                <button type="button" id="btn-play" title="Play/Pause">
+                    <span class="icon-play"><?= icon('play') ?></span>
+                    <span class="icon-pause"><?= icon('pause') ?></span>
+                </button>
+                <button type="button" id="btn-next" title="Weiter"><?= icon('next') ?></button>
+            </div>
+
+            <div class="volume-control">
+                <?= icon('volume') ?>
+                <input type="range" id="volume-bar" min="0" max="100" value="80" step="1">
+            </div>
+
+            <p class="muted" id="sync-status">Synchronisiere …</p>
+
         </div>
-
-        <div class="player-progress">
-            <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
-        </div>
-
-        <p class="muted" id="sync-status">Synchronisiere …</p>
 
     </section>
 

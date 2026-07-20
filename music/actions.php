@@ -41,6 +41,7 @@ if ($action === 'state') {
     }
 
     ensureListenRoom($pdo, $playlistId);
+    touchListenPresence($pdo, $playlistId, $userId);
 
     $statement = $pdo->prepare(
         'SELECT current_track_id, position_seconds, is_playing, shuffle, updated_at
@@ -60,6 +61,7 @@ if ($action === 'state') {
             'updated_at' => $room['updated_at'],
             'server_time' => date('Y-m-d H:i:s'),
         ],
+        'listeners' => getActiveListeners($pdo, $playlistId),
     ]);
 }
 

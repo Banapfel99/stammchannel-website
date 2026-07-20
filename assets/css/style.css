@@ -539,14 +539,241 @@ tbody tr:last-child td {
 
 /* -------------------------------- Music player ---------------------------------- */
 
-.music-player {
+.music-player-hero {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+    margin-top: 25px;
+    padding: 56px;
+    min-height: calc(100vh - 220px);
+    background:
+        radial-gradient(700px 500px at 15% 15%, rgba(124, 140, 255, 0.16), transparent 60%),
+        radial-gradient(700px 500px at 85% 85%, rgba(255, 107, 214, 0.14), transparent 60%),
+        var(--surface);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glow);
+    overflow: hidden;
+}
+
+.music-player-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 60px);
+    pointer-events: none;
+}
+
+.vinyl-stage {
+    position: relative;
+    flex-shrink: 0;
+    width: min(400px, 78vw);
+    height: min(400px, 78vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vinyl-glow {
+    position: absolute;
+    inset: -30px;
+    border-radius: 50%;
+    background: var(--accent-grad);
+    filter: blur(60px);
+    opacity: 0.25;
+    z-index: 0;
+    transition: opacity 0.4s var(--ease);
+}
+
+.music-player-hero.is-playing .vinyl-glow {
+    opacity: 0.5;
+}
+
+.vinyl-record {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background:
+        repeating-radial-gradient(
+            circle at center,
+            #1a1d26 0,
+            #1a1d26 2px,
+            #23262f 3px,
+            #23262f 4px
+        );
+    box-shadow:
+        0 30px 60px -20px rgba(0, 0, 0, 0.7),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: spin 9s linear infinite;
+    animation-play-state: paused;
+}
+
+.music-player-hero.is-playing .vinyl-record {
+    animation-play-state: running;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.vinyl-cover-img {
+    position: absolute;
+    width: 46%;
+    height: 46%;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: inset 0 0 0 6px #14161d, 0 0 0 1px rgba(255, 255, 255, 0.08);
+    z-index: 2;
+}
+
+.vinyl-grooves {
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 0 0 14px rgba(255, 255, 255, 0.02),
+        0 0 0 28px rgba(255, 255, 255, 0.025),
+        0 0 0 42px rgba(255, 255, 255, 0.02),
+        0 0 0 56px rgba(255, 255, 255, 0.025);
+    pointer-events: none;
+}
+
+.vinyl-label {
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    border-radius: 50%;
+    background: var(--accent-grad);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    z-index: 2;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.vinyl-label .icon {
+    width: 32%;
+    height: 32%;
+}
+
+.vinyl-spindle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #05070d;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+    z-index: 3;
+}
+
+.vinyl-arm {
+    position: absolute;
+    top: -18px;
+    right: 6%;
+    width: 12px;
+    height: 190px;
+    transform-origin: top center;
+    transform: rotate(-18deg);
+    z-index: 3;
+    transition: transform 0.6s var(--ease);
+    pointer-events: none;
+}
+
+.vinyl-arm::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface-strong);
+    border: 1px solid var(--border-strong);
+    transform: translateX(-50%);
+}
+
+.vinyl-arm::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    width: 6px;
+    height: 100%;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #cfd4ea, #7c8cff);
+    transform: translateX(-50%);
+    box-shadow: var(--shadow-soft);
+}
+
+.music-player-hero.is-playing .vinyl-arm {
+    transform: rotate(6deg);
+}
+
+.player-info {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 380px;
+    min-width: 300px;
+    max-width: 480px;
     text-align: center;
 }
 
-.now-playing {
-    font-size: 17px;
+.player-info-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.listeners {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+
+.listener-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 12px;
     font-weight: 600;
-    margin-bottom: 18px;
+    background: var(--success-bg);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    color: #c9ffe9;
+    animation: rise 0.35s var(--ease);
+}
+
+.listener-chip::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 3px var(--success-bg);
+}
+
+.now-playing {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -586,15 +813,15 @@ tbody tr:last-child td {
 }
 
 .player-controls #btn-play {
-    width: 62px;
-    height: 62px;
+    width: 68px;
+    height: 68px;
     background: var(--accent-grad);
     box-shadow: 0 10px 30px -10px rgba(124, 92, 255, 0.65);
 }
 
 .player-controls #btn-play .icon {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
 }
 
 .player-controls #btn-play .icon-pause {
@@ -623,6 +850,25 @@ tbody tr:last-child td {
     width: 100%;
 }
 
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px auto 0;
+    max-width: 260px;
+    color: var(--text-muted);
+}
+
+.volume-control .icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.volume-control input[type="range"] {
+    flex: 1;
+}
+
 #sync-status {
     margin-top: 14px;
     font-size: 12px;
@@ -639,6 +885,19 @@ tbody tr:last-child td {
     background: var(--success);
     box-shadow: 0 0 0 3px var(--success-bg);
 }
+
+@media (max-width: 860px) {
+    .music-player-hero {
+        padding: 32px 20px;
+        gap: 30px;
+        min-height: 0;
+    }
+
+    .vinyl-arm {
+        display: none;
+    }
+}
+
 
 /* --------------------------------- Track table ----------------------------------- */
 
@@ -747,6 +1006,51 @@ tbody tr:last-child td {
     margin-top: -8px;
     margin-bottom: 20px;
 }
+
+.password-reveal code {
+    display: inline-block;
+    margin: 0 4px;
+    padding: 3px 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    border-radius: var(--radius-sm);
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    color: #fff;
+    letter-spacing: 0.02em;
+}
+
+.password-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.password-input {
+    width: auto;
+    min-width: 160px;
+    padding: 8px 10px;
+    font-size: 13px;
+}
+
+.password-form button {
+    width: auto;
+}
+
+.password-form .btn-generate-password {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.password-form .btn-generate-password .icon {
+    width: 16px;
+    height: 16px;
+}
+
 
 .section-actions button,
 .section-actions .button {

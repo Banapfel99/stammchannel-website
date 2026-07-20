@@ -136,6 +136,41 @@ function ensureListenRoom(PDO $pdo, int $playlistId): void
     $statement->execute(['playlist_id' => $playlistId]);
 }
 
+function touchListenPresence(PDO $pdo, int $playlistId, int $userId): void
+{
+    try {
+        $statement = $pdo->prepare(
+            'INSERT INTO listen_presence (playlist_id, user_id, last_seen)
+             VALUES (:playlist_id, :user_id, NOW())
+             ON DUPLICATE KEY UPDATE last_seen = NOW()'
+        );
+        $statement->execute(['playlist_id' => $playlistId, 'user_id' => $userId]);
+    } catch (PDOException $e) {
+        // listen_presence table not migrated yet on this environment — ignore silently.
+    }
+}
+
+function getActiveListeners(PDO $pdo, int $playlistId, int $thresholdSeconds = 12): array
+{
+    try {
+        $statement = $pdo->prepare(
+            'SELECT u.username
+             FROM listen_presence lp
+             JOIN users u ON u.id = lp.user_id
+             WHERE lp.playlist_id = :playlist_id
+               AND lp.last_seen >= (NOW() - INTERVAL :threshold SECOND)
+             ORDER BY u.username ASC'
+        );
+        $statement->bindValue('playlist_id', $playlistId, PDO::PARAM_INT);
+        $statement->bindValue('threshold', $thresholdSeconds, PDO::PARAM_INT);
+        $statement->execute();
+
+        return array_column($statement->fetchAll(), 'username');
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
 function musicSchemaReady(PDO $pdo): bool
 {
     static $ready = null;

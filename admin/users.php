@@ -11,10 +11,35 @@ requireAdmin();
 
 $message = '';
 $error = '';
+$revealedPassword = null;
+$revealedForUser = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrfToken($_POST['csrf_token'] ?? null)) {
         $error = 'Ungültige Anfrage.';
+    } elseif (($_POST['form'] ?? '') === 'change_password') {
+        $targetUserId = (int) ($_POST['user_id'] ?? 0);
+        $newPassword = (string) ($_POST['new_password'] ?? '');
+
+        $targetUser = $pdo->prepare('SELECT id, username FROM users WHERE id = :id LIMIT 1');
+        $targetUser->execute(['id' => $targetUserId]);
+        $targetUser = $targetUser->fetch();
+
+        if ($targetUser === false) {
+            $error = 'Benutzer wurde nicht gefunden.';
+        } elseif (strlen($newPassword) < 10) {
+            $error = 'Das neue Passwort muss mindestens 10 Zeichen haben.';
+        } else {
+            $statement = $pdo->prepare('UPDATE users SET password_hash = :password_hash WHERE id = :id');
+            $statement->execute([
+                'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT),
+                'id' => $targetUserId,
+            ]);
+
+            $revealedPassword = $newPassword;
+            $revealedForUser = $targetUser['username'];
+            $message = 'Passwort für „' . $targetUser['username'] . '" wurde geändert.';
+        }
     } else {
         $username = trim($_POST['username'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -133,6 +158,21 @@ $users = $pdo
 
     <?php endif; ?>
 
+    <?php if ($revealedPassword !== null): ?>
+
+        <div class="success password-reveal">
+            <?= icon('key') ?>
+            Neues Passwort für <strong><?= htmlspecialchars($revealedForUser) ?></strong>:
+            <code><?= htmlspecialchars($revealedPassword) ?></code>
+            <br>
+            <span class="muted">
+                Bitte sicher an den Benutzer weitergeben — dieses Passwort wird nirgendwo
+                gespeichert und nach einem Neuladen der Seite nicht mehr angezeigt.
+            </span>
+        </div>
+
+    <?php endif; ?>
+
     <section class="admin-card">
 
         <h2>
@@ -205,6 +245,7 @@ $users = $pdo
                 <th>Name</th>
                 <th>Rolle</th>
                 <th>Erstellt</th>
+                <th>Passwort ändern</th>
             </tr>
 
             </thead>
@@ -227,6 +268,24 @@ $users = $pdo
                         <?= htmlspecialchars($user['created_at']) ?>
                     </td>
 
+                    <td>
+                        <form method="post" class="inline-form password-form">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                            <input type="hidden" name="form" value="change_password">
+                            <input type="hidden" name="user_id" value="<?= (int) $user['id'] ?>">
+                            <input
+                                type="text"
+                                name="new_password"
+                                class="password-input"
+                                placeholder="Neues Passwort"
+                                minlength="10"
+                                required
+                            >
+                            <button type="button" class="btn-ghost btn-small btn-generate-password" title="Zufällig generieren"><?= icon('key') ?></button>
+                            <button type="submit" class="btn-small">Ändern</button>
+                        </form>
+                    </td>
+
                 </tr>
 
             <?php endforeach; ?>
@@ -238,6 +297,23 @@ $users = $pdo
     </section>
 
 </main>
+
+<script>
+document.querySelectorAll('.btn-generate-password').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var input = button.parentElement.querySelector('.password-input');
+        var alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#%';
+        var bytes = new Uint32Array(16);
+        window.crypto.getRandomValues(bytes);
+        var value = '';
+        for (var i = 0; i < bytes.length; i++) {
+            value += alphabet[bytes[i] % alphabet.length];
+        }
+        input.value = value;
+        input.type = 'text';
+    });
+});
+</script>
 
 </body>
 </html>

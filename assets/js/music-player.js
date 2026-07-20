@@ -16,6 +16,10 @@
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
     const btnShuffle = document.getElementById('btn-shuffle');
+    const volumeBar = document.getElementById('volume-bar');
+    const vinylCover = document.getElementById('vinyl-cover');
+    const vinylLabel = document.getElementById('vinyl-label');
+    const listenersList = document.getElementById('listeners-list');
 
     const tracks = JSON.parse(document.getElementById('track-data').textContent || '[]');
     const csrfToken = window.MUSIC_CSRF_TOKEN;
@@ -40,6 +44,36 @@
         nowPlayingTitle.textContent = track
             ? track.title + ' — hochgeladen von ' + track.uploader
             : 'Kein Titel ausgewählt';
+
+        if (track && track.cover) {
+            vinylCover.src = track.cover;
+            vinylCover.hidden = false;
+            vinylLabel.hidden = true;
+        } else {
+            vinylCover.hidden = true;
+            vinylCover.src = '';
+            vinylLabel.hidden = false;
+        }
+    }
+
+    function initVolume() {
+        const stored = Number(window.localStorage.getItem('music-player-volume'));
+        const initial = Number.isFinite(stored) && stored >= 0 && stored <= 100 ? stored : 80;
+        volumeBar.value = String(initial);
+        audio.volume = initial / 100;
+    }
+
+    function renderListeners(listeners) {
+        if (!Array.isArray(listeners) || listeners.length === 0) {
+            listenersList.innerHTML = '';
+            listenersList.hidden = true;
+            return;
+        }
+
+        listenersList.hidden = false;
+        listenersList.innerHTML = listeners
+            .map((name) => '<span class="listener-chip">' + name.replace(/[<>&]/g, '') + '</span>')
+            .join('');
     }
 
     function loadTrack(trackId, autoplay) {
@@ -117,6 +151,7 @@
     audio.addEventListener('play', () => {
         isPlaying = true;
         btnPlay.classList.add('is-playing');
+        playerRoot.classList.add('is-playing');
         recordPlayIfNeeded();
 
         if (!suppressSync) {
@@ -127,6 +162,7 @@
     audio.addEventListener('pause', () => {
         isPlaying = false;
         btnPlay.classList.remove('is-playing');
+        playerRoot.classList.remove('is-playing');
 
         if (!suppressSync) {
             broadcastState();
@@ -168,6 +204,12 @@
         shuffle = !shuffle;
         btnShuffle.classList.toggle('active', shuffle);
         broadcastState();
+    });
+
+    volumeBar.addEventListener('input', () => {
+        const value = Number(volumeBar.value);
+        audio.volume = value / 100;
+        window.localStorage.setItem('music-player-volume', String(value));
     });
 
     document.querySelectorAll('.btn-play-track').forEach((button) => {
@@ -221,12 +263,15 @@
                 if (data.room) {
                     applyRemoteState(data.room);
                 }
+
+                renderListeners(data.listeners);
             })
             .catch(() => {
                 syncStatus.textContent = 'Synchronisierung fehlgeschlagen';
             });
     }
 
+    initVolume();
     pollState();
     setInterval(pollState, 2000);
 })();

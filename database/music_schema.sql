@@ -72,3 +72,16 @@ CREATE TABLE IF NOT EXISTS listen_rooms (
     CONSTRAINT fk_room_track FOREIGN KEY (current_track_id) REFERENCES tracks(id) ON DELETE SET NULL,
     CONSTRAINT fk_room_user FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Tracks which users are actively listening to a playlist right now (heartbeat table).
+-- Rows are upserted every time a client polls the playback state and are considered
+-- "active" only if last_seen is recent (see includes/music.php::getActiveListeners()).
+CREATE TABLE IF NOT EXISTS listen_presence (
+    playlist_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
+    last_seen DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (playlist_id, user_id),
+    CONSTRAINT fk_presence_playlist FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
+    CONSTRAINT fk_presence_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
