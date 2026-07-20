@@ -545,7 +545,7 @@ tbody tr:last-child td {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 56px;
+    gap: 64px;
     margin-top: 25px;
     padding: 56px;
     min-height: calc(100vh - 220px);
@@ -553,6 +553,8 @@ tbody tr:last-child td {
         radial-gradient(700px 500px at 15% 15%, rgba(124, 140, 255, 0.16), transparent 60%),
         radial-gradient(700px 500px at 85% 85%, rgba(255, 107, 214, 0.14), transparent 60%),
         var(--surface);
+    background-size: 160% 160%;
+    animation: heroDrift 22s ease-in-out infinite alternate;
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     border: 1px solid var(--border);
@@ -561,19 +563,53 @@ tbody tr:last-child td {
     overflow: hidden;
 }
 
+@keyframes heroDrift {
+    from {
+        background-position: 0% 0%, 100% 100%, 0 0;
+    }
+    to {
+        background-position: 20% 10%, 80% 90%, 0 0;
+    }
+}
+
 .music-player-hero::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 60px);
+    background: repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.03) 0 2px, transparent 2px 60px);
     pointer-events: none;
+}
+
+.music-player-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(2px 2px at 10% 20%, rgba(255, 255, 255, 0.35), transparent),
+        radial-gradient(2px 2px at 80% 30%, rgba(255, 255, 255, 0.25), transparent),
+        radial-gradient(1.5px 1.5px at 60% 75%, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(1.5px 1.5px at 30% 85%, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(2px 2px at 92% 65%, rgba(255, 255, 255, 0.25), transparent);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+@media (min-width: 901px) {
+    .music-player-hero {
+        width: 100vw;
+        max-width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        border-radius: 0;
+        min-height: calc(100vh - 74px);
+    }
 }
 
 .vinyl-stage {
     position: relative;
     flex-shrink: 0;
-    width: min(400px, 78vw);
-    height: min(400px, 78vw);
+    width: min(440px, 78vw);
+    height: min(440px, 78vw);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -622,6 +658,25 @@ tbody tr:last-child td {
     animation-play-state: running;
 }
 
+.vinyl-record::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 210deg,
+        transparent 0deg,
+        rgba(255, 255, 255, 0.16) 35deg,
+        transparent 80deg,
+        transparent 260deg,
+        rgba(255, 255, 255, 0.1) 300deg,
+        transparent 340deg
+    );
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 1;
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);
@@ -644,10 +699,13 @@ tbody tr:last-child td {
     border-radius: 50%;
     box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.03),
-        0 0 0 14px rgba(255, 255, 255, 0.02),
-        0 0 0 28px rgba(255, 255, 255, 0.025),
-        0 0 0 42px rgba(255, 255, 255, 0.02),
-        0 0 0 56px rgba(255, 255, 255, 0.025);
+        0 0 0 10px rgba(255, 255, 255, 0.018),
+        0 0 0 20px rgba(255, 255, 255, 0.024),
+        0 0 0 30px rgba(255, 255, 255, 0.018),
+        0 0 0 40px rgba(255, 255, 255, 0.024),
+        0 0 0 50px rgba(255, 255, 255, 0.018),
+        0 0 0 60px rgba(255, 255, 255, 0.024),
+        0 0 0 70px rgba(255, 255, 255, 0.016);
     pointer-events: none;
 }
 
@@ -663,6 +721,11 @@ tbody tr:last-child td {
     color: #fff;
     z-index: 2;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.vinyl-cover-img[hidden],
+.vinyl-label[hidden] {
+    display: none !important;
 }
 
 .vinyl-label .icon {
