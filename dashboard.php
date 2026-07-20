@@ -39,9 +39,9 @@ requireLogin();
     <div class="nav-links">
 
         <select class="theme-switcher" title="Design wählen" aria-label="Design wählen">
+            <option value="sunset">Sunset</option>
             <option value="aurora">Aurora</option>
             <option value="neon">Neon Arcade</option>
-            <option value="sunset">Sunset</option>
             <option value="mono">Mono</option>
         </select>
 

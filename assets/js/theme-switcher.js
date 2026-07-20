@@ -5,18 +5,18 @@
     var root = document.documentElement;
 
     function applyTheme(theme) {
-        if (theme && theme !== 'aurora') {
+        if (theme && theme !== 'sunset') {
             root.setAttribute('data-theme', theme);
         } else {
             root.removeAttribute('data-theme');
         }
 
         document.querySelectorAll('.theme-switcher').forEach(function (select) {
-            select.value = theme || 'aurora';
+            select.value = theme || 'sunset';
         });
     }
 
-    var stored = window.localStorage.getItem(STORAGE_KEY) || 'aurora';
+    var stored = window.localStorage.getItem(STORAGE_KEY) || 'sunset';
     applyTheme(stored);
 
     document.addEventListener('DOMContentLoaded', function () {

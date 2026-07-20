@@ -125,12 +125,12 @@ $trackListJson = json_encode(array_map(
 
     <div class="nav-links">
         <select class="theme-switcher" title="Design wählen" aria-label="Design wählen">
+            <option value="sunset">Sunset</option>
             <option value="aurora">Aurora</option>
             <option value="neon">Neon Arcade</option>
-            <option value="sunset">Sunset</option>
             <option value="mono">Mono</option>
         </select>
-        <a href="/music/">Musik</a>
+        <a href="/music/" class="is-active">Musik</a>
         <a href="/dashboard.php">Dashboard</a>
         <?php if (isAdmin()): ?><a href="/admin/">Admin</a><?php endif; ?>
         <a href="/logout.php">Abmelden</a>
@@ -138,22 +138,30 @@ $trackListJson = json_encode(array_map(
 
 </nav>
 
-<main class="content">
+<main class="content music-page">
 
-    <h1><?= htmlspecialchars($playlist['name']) ?></h1>
+    <div class="page-head">
+        <div class="page-head-info">
+            <h1><?= htmlspecialchars($playlist['name']) ?></h1>
+            <p class="muted">Erstellt von <?= htmlspecialchars($playlist['owner_username']) ?></p>
+        </div>
 
-    <p class="muted">
-        Erstellt von <?= htmlspecialchars($playlist['owner_username']) ?>
-    </p>
-
-    <?php if ($canManage): ?>
-        <form method="post" action="/music/delete.php" class="inline-form" onsubmit="return confirm('Playlist inklusive aller Titel wirklich löschen?');">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-            <input type="hidden" name="target" value="playlist">
-            <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
-            <button type="submit" class="btn-danger">Playlist löschen</button>
-        </form>
-    <?php endif; ?>
+        <?php if ($canManage): ?>
+            <div class="menu" id="playlist-menu">
+                <button type="button" class="btn-icon-ghost" id="playlist-menu-toggle" title="Optionen" aria-haspopup="true" aria-expanded="false">
+                    <?= icon('more') ?>
+                </button>
+                <div class="menu-dropdown" id="playlist-menu-dropdown" hidden>
+                    <form method="post" action="/music/delete.php" onsubmit="return confirm('Playlist inklusive aller Titel wirklich löschen?');">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                        <input type="hidden" name="target" value="playlist">
+                        <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
+                        <button type="submit" class="menu-item menu-item-danger"><?= icon('trash') ?> Playlist löschen</button>
+                    </form>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
 
     <?php if ($error !== ''): ?>
         <div class="error"><?= htmlspecialchars($error) ?></div>
@@ -184,18 +192,16 @@ $trackListJson = json_encode(array_map(
 
         <div class="player-info">
 
-            <div class="player-info-head">
-                <h2>Gemeinsam anhören</h2>
+            <div class="now-playing-block">
                 <span class="track-position" id="track-position"></span>
-                <div class="listeners" id="listeners-list" title="Hört gerade mit"></div>
-            </div>
-
-            <div class="now-playing">
-                <?= icon('headphones') ?>
-                <span id="now-playing-title">Kein Titel ausgewählt</span>
-                <span class="equalizer" id="equalizer">
-                    <span></span><span></span><span></span><span></span>
-                </span>
+                <h2 class="now-playing-title" id="now-playing-title">Kein Titel ausgewählt</h2>
+                <p class="now-playing-artist" id="now-playing-artist">
+                    <?= icon('headphones') ?>
+                    <span id="now-playing-uploader">Wähle einen Titel aus der Liste</span>
+                    <span class="equalizer" id="equalizer">
+                        <span></span><span></span><span></span><span></span>
+                    </span>
+                </p>
             </div>
 
             <audio id="audio-element" preload="metadata"></audio>
@@ -220,7 +226,6 @@ $trackListJson = json_encode(array_map(
                 <button type="button" class="btn-gaming btn-gaming-primary" id="btn-play" title="Play/Pause">
                     <span class="icon-play"><?= icon('play') ?></span>
                     <span class="icon-pause"><?= icon('pause') ?></span>
-                    <span class="btn-gaming-label">Play</span>
                 </button>
                 <button type="button" class="btn-gaming" id="btn-next" title="Weiter">
                     <?= icon('next') ?>
@@ -233,11 +238,19 @@ $trackListJson = json_encode(array_map(
                 <input type="range" id="volume-bar" min="0" max="100" value="80" step="1">
             </div>
 
-            <p class="muted" id="sync-status">Synchronisiere …</p>
+            <div class="listen-together" id="listen-together">
+                <div class="listen-together-status">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span>Gemeinsam anhören</span>
+                    <span class="sync-dot" id="sync-status" title="Synchronisiert"></span>
+                </div>
+                <div class="listeners" id="listeners-list" title="Hört gerade mit" hidden></div>
+            </div>
 
         </div>
 
     </section>
+
 
     <section class="admin-card tab-card">
 
@@ -441,6 +454,39 @@ document.querySelectorAll('.tab-btn').forEach(function (button) {
         });
     });
 });
+
+(function () {
+    var toggle = document.getElementById('playlist-menu-toggle');
+    var dropdown = document.getElementById('playlist-menu-dropdown');
+
+    if (!toggle || !dropdown) {
+        return;
+    }
+
+    function closeMenu() {
+        dropdown.hidden = true;
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle.addEventListener('click', function (event) {
+        event.stopPropagation();
+        var willOpen = dropdown.hidden;
+        dropdown.hidden = !willOpen;
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!dropdown.hidden && !dropdown.contains(event.target) && event.target !== toggle) {
+            closeMenu();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeMenu();
+        }
+    });
+})();
 </script>
 <script src="<?= asset('/assets/js/music-player.js') ?>"></script>
 

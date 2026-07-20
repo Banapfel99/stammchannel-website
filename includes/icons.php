@@ -28,6 +28,7 @@ function icon(string $name, string $class = 'icon'): string
         'volume' => '<polygon points="4 9 9 9 13 5 13 19 9 15 4 15 4 9"/><path d="M17.5 8.5a5 5 0 0 1 0 7"/><path d="M20.3 6a9 9 0 0 1 0 12"/>',
         'key' => '<circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3"/><path d="M16.5 7.5 19 10"/><path d="M13.5 4.5 16 7"/>',
         'eye' => '<path d="M1.5 12S5 5 12 5s10.5 7 10.5 7-3.5 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/>',
+        'more' => '<circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>',
     ];
 
     $paths = $icons[$name] ?? $icons['music'];

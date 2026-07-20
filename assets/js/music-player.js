@@ -10,6 +10,7 @@
     const playlistId = playerRoot.dataset.playlistId;
     const audio = document.getElementById('audio-element');
     const nowPlayingTitle = document.getElementById('now-playing-title');
+    const nowPlayingUploader = document.getElementById('now-playing-uploader');
     const progressBar = document.getElementById('progress-bar');
     const syncStatus = document.getElementById('sync-status');
     const btnPlay = document.getElementById('btn-play');
@@ -55,9 +56,10 @@
 
     function setNowPlaying(trackId) {
         const track = tracks.find((t) => t.id === trackId);
-        nowPlayingTitle.textContent = track
-            ? track.title + ' — hochgeladen von ' + track.uploader
-            : 'Kein Titel ausgewählt';
+        nowPlayingTitle.textContent = track ? track.title : 'Kein Titel ausgewählt';
+        nowPlayingUploader.textContent = track
+            ? 'Hochgeladen von ' + track.uploader
+            : 'Wähle einen Titel aus der Liste';
 
         if (track && track.cover) {
             vinylCover.src = track.cover;
@@ -93,7 +95,14 @@
 
         listenersList.hidden = false;
         listenersList.innerHTML = listeners
-            .map((name) => '<span class="listener-chip">' + name.replace(/[<>&]/g, '') + '</span>')
+            .map((name) => {
+                const safeName = String(name).replace(/[<>&]/g, '');
+                const initial = safeName.charAt(0).toUpperCase() || '?';
+                return '<span class="listener-chip" title="' + safeName + ' hört mit">'
+                    + '<span class="listener-avatar">' + initial + '</span>'
+                    + safeName
+                    + '</span>';
+            })
             .join('');
     }
 
@@ -280,7 +289,8 @@
             audio.pause();
         }
 
-        syncStatus.textContent = 'Synchronisiert';
+        syncStatus.classList.remove('is-error');
+        syncStatus.title = 'Synchronisiert';
         suppressSync = false;
     }
 
@@ -295,7 +305,8 @@
                 renderListeners(data.listeners);
             })
             .catch(() => {
-                syncStatus.textContent = 'Synchronisierung fehlgeschlagen';
+                syncStatus.classList.add('is-error');
+                syncStatus.title = 'Synchronisierung fehlgeschlagen';
             });
     }
 
