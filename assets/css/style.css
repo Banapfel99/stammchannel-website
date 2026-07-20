@@ -450,6 +450,10 @@ button:active,
     animation: rise 0.5s var(--ease);
 }
 
+.music-page.content {
+    max-width: 1440px;
+}
+
 .content > p {
     margin-bottom: 30px;
 }

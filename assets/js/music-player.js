@@ -92,13 +92,6 @@
         audio.volume = initial / 100;
     }
 
-    function renderListeners(listeners) {
-        if (!Array.isArray(listeners) || listeners.length === 0) {
-            listenersList.innerHTML = '';
-            listenersList.hidden = true;
-            return;
-        }
-
     function avatarColorFor(name) {
         let hash = 0;
         for (let i = 0; i < name.length; i++) {
