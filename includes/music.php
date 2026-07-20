@@ -46,13 +46,25 @@ function getMaxCoverUploadBytes(PDO $pdo): int
     return getMaxCoverUploadMb($pdo) * 1024 * 1024;
 }
 
-function ensureMusicDirectories(): void
+function ensureMusicDirectories(): bool
 {
     foreach ([MUSIC_UPLOAD_DIR, MUSIC_AUDIO_DIR, MUSIC_COVER_DIR] as $dir) {
         if (!is_dir($dir)) {
-            mkdir($dir, 0755, true);
+            if (!@mkdir($dir, 0755, true) && !is_dir($dir)) {
+                error_log('Musik-Upload: Verzeichnis konnte nicht erstellt werden: ' . $dir);
+
+                return false;
+            }
+        }
+
+        if (!is_writable($dir)) {
+            error_log('Musik-Upload: Verzeichnis ist nicht beschreibbar: ' . $dir);
+
+            return false;
         }
     }
+
+    return true;
 }
 
 function musicRandomFilename(string $extension): string

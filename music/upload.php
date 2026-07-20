@@ -81,26 +81,40 @@ if (isset($_FILES['cover']) && $_FILES['cover']['error'] === UPLOAD_ERR_OK) {
         redirectWithError($playlistId, 'Dieses Cover-Format wird nicht unterstützt.');
     }
 
-    ensureMusicDirectories();
+    if (!ensureMusicDirectories()) {
+        redirectWithError($playlistId, 'Upload-Verzeichnis ist nicht beschreibbar. Bitte Server-Administrator kontaktieren.');
+    }
 
     $coverExtension = MUSIC_ALLOWED_COVER_MIME[$detectedCoverMime];
     $coverFilename = musicRandomFilename($coverExtension);
     $coverDestination = MUSIC_COVER_DIR . '/' . $coverFilename;
 
     if (!move_uploaded_file($coverFile['tmp_name'], $coverDestination)) {
+        error_log(
+            'Musik-Upload: move_uploaded_file (Cover) fehlgeschlagen. Ziel: '
+            . $coverDestination . ' | Verzeichnis beschreibbar: '
+            . (is_writable(MUSIC_COVER_DIR) ? 'ja' : 'nein')
+        );
         redirectWithError($playlistId, 'Cover konnte nicht gespeichert werden.');
     }
 
     $coverMime = $detectedCoverMime;
 }
 
-ensureMusicDirectories();
+if (!ensureMusicDirectories()) {
+    redirectWithError($playlistId, 'Upload-Verzeichnis ist nicht beschreibbar. Bitte Server-Administrator kontaktieren.');
+}
 
 $audioExtension = MUSIC_ALLOWED_AUDIO_MIME[$audioMime];
 $audioFilename = musicRandomFilename($audioExtension);
 $audioDestination = MUSIC_AUDIO_DIR . '/' . $audioFilename;
 
 if (!move_uploaded_file($audioFile['tmp_name'], $audioDestination)) {
+    error_log(
+        'Musik-Upload: move_uploaded_file (Audio) fehlgeschlagen. Ziel: '
+        . $audioDestination . ' | Verzeichnis beschreibbar: '
+        . (is_writable(MUSIC_AUDIO_DIR) ? 'ja' : 'nein')
+    );
     redirectWithError($playlistId, 'Audiodatei konnte nicht gespeichert werden.');
 }
 
