@@ -123,3 +123,60 @@ function ensureListenRoom(PDO $pdo, int $playlistId): void
 
     $statement->execute(['playlist_id' => $playlistId]);
 }
+
+function musicSchemaReady(PDO $pdo): bool
+{
+    static $ready = null;
+
+    if ($ready !== null) {
+        return $ready;
+    }
+
+    try {
+        $pdo->query('SELECT 1 FROM playlists LIMIT 1');
+        $ready = true;
+    } catch (PDOException $e) {
+        $ready = false;
+    }
+
+    return $ready;
+}
+
+function appSettingsSchemaReady(PDO $pdo): bool
+{
+    static $ready = null;
+
+    if ($ready !== null) {
+        return $ready;
+    }
+
+    try {
+        $pdo->query('SELECT 1 FROM app_settings LIMIT 1');
+        $ready = true;
+    } catch (PDOException $e) {
+        $ready = false;
+    }
+
+    return $ready;
+}
+
+function requireMusicSchema(PDO $pdo): void
+{
+    if (musicSchemaReady($pdo)) {
+        return;
+    }
+
+    http_response_code(503);
+
+    echo '<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">'
+        . '<title>Musik nicht verfügbar</title>'
+        . '<link rel="stylesheet" href="/assets/css/style.css"></head><body>'
+        . '<main class="content"><h1>Musik-Funktion ist noch nicht eingerichtet</h1>'
+        . '<p>Die Datenbanktabellen für das Musik-Widget fehlen. Bitte führe '
+        . '<code>database/music_schema.sql</code> einmalig gegen die Datenbank aus, '
+        . 'dann lade diese Seite erneut.</p>'
+        . '<p><a href="/dashboard.php">Zurück zum Dashboard</a></p>'
+        . '</main></body></html>';
+
+    exit;
+}

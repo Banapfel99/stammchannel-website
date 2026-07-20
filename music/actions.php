@@ -11,17 +11,23 @@ requireLogin();
 
 header('Content-Type: application/json; charset=utf-8');
 
+if (!musicSchemaReady($pdo)) {
+    http_response_code(503);
+    echo json_encode(['error' => 'Musik-Funktion ist noch nicht eingerichtet.']);
+    exit;
+}
+
 $userId = (int) $_SESSION['user_id'];
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
-function jsonError(string $message, int $status = 400): never
+function jsonError(string $message, int $status = 400): void
 {
     http_response_code($status);
     echo json_encode(['error' => $message]);
     exit;
 }
 
-function jsonOk(array $data = []): never
+function jsonOk(array $data = []): void
 {
     echo json_encode(['ok' => true] + $data);
     exit;

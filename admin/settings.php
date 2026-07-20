@@ -10,6 +10,14 @@ require __DIR__ . '/../includes/music.php';
 
 requireAdmin();
 
+if (!appSettingsSchemaReady($pdo)) {
+    http_response_code(503);
+    exit(
+        'Die Musik-Datenbanktabellen fehlen. Bitte führe database/music_schema.sql '
+        . 'einmalig gegen die Datenbank aus.'
+    );
+}
+
 $message = '';
 $error = '';
 

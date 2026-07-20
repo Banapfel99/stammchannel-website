@@ -10,6 +10,8 @@ require __DIR__ . '/../includes/music.php';
 
 requireLogin();
 
+requireMusicSchema($pdo);
+
 $userId = (int) $_SESSION['user_id'];
 $maxPlaylists = getMaxPlaylistsPerUser($pdo);
 $currentCount = countUserPlaylists($pdo, $userId);

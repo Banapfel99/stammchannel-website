@@ -8,6 +8,8 @@ require __DIR__ . '/../includes/music.php';
 
 requireLogin();
 
+requireMusicSchema($pdo);
+
 $type = $_GET['type'] ?? '';
 $trackId = (int) ($_GET['id'] ?? 0);
 
