@@ -124,6 +124,12 @@ $trackListJson = json_encode(array_map(
     <div class="nav-brand">Stammchannel</div>
 
     <div class="nav-links">
+        <select class="theme-switcher" title="Design wählen" aria-label="Design wählen">
+            <option value="aurora">Aurora</option>
+            <option value="neon">Neon Arcade</option>
+            <option value="sunset">Sunset</option>
+            <option value="mono">Mono</option>
+        </select>
         <a href="/music/">Musik</a>
         <a href="/dashboard.php">Dashboard</a>
         <?php if (isAdmin()): ?><a href="/admin/">Admin</a><?php endif; ?>
@@ -158,6 +164,12 @@ $trackListJson = json_encode(array_map(
     <?php endif; ?>
 
     <section class="music-player-hero" id="music-player" data-playlist-id="<?= $playlistId ?>">
+
+        <div class="soundwave-bg" aria-hidden="true">
+            <?php for ($i = 0; $i < 48; $i++): ?>
+                <span style="animation-duration: <?= number_format(1.6 + (($i * 37) % 100) / 60, 2) ?>s; animation-delay: -<?= number_format((($i * 53) % 100) / 40, 2) ?>s;"></span>
+            <?php endfor; ?>
+        </div>
 
         <div class="vinyl-stage">
             <div class="vinyl-arm" id="vinyl-arm"></div>
@@ -227,7 +239,15 @@ $trackListJson = json_encode(array_map(
 
     </section>
 
-    <section class="admin-card">
+    <section class="admin-card tab-card">
+
+        <div class="tab-nav" role="tablist">
+            <button type="button" class="tab-btn is-active" data-tab="tracks"><?= icon('music') ?> Titel</button>
+            <button type="button" class="tab-btn" data-tab="upload"><?= icon('upload') ?> Hochladen</button>
+            <button type="button" class="tab-btn" data-tab="spotify"><?= icon('spotify') ?> Spotify</button>
+        </div>
+
+        <div class="tab-panel is-active" data-tab-panel="tracks">
 
         <h2>Titel</h2>
 
@@ -343,9 +363,9 @@ $trackListJson = json_encode(array_map(
 
         </table>
 
-    </section>
+        </div>
 
-    <section class="admin-card">
+        <div class="tab-panel" data-tab-panel="upload">
 
         <h2>Titel hochladen</h2>
 
@@ -371,9 +391,9 @@ $trackListJson = json_encode(array_map(
 
         </form>
 
-    </section>
+        </div>
 
-    <section class="admin-card">
+        <div class="tab-panel" data-tab-panel="spotify">
 
         <h2>Spotify kombinieren</h2>
 
@@ -398,6 +418,8 @@ $trackListJson = json_encode(array_map(
             <button type="submit">Hinzufügen</button>
         </form>
 
+        </div>
+
     </section>
 
 </main>
@@ -405,8 +427,24 @@ $trackListJson = json_encode(array_map(
 <script id="track-data" type="application/json"><?= $trackListJson ?></script>
 <script>
 window.MUSIC_CSRF_TOKEN = <?= json_encode(getCsrfToken(), JSON_THROW_ON_ERROR) ?>;
+
+document.querySelectorAll('.tab-btn').forEach(function (button) {
+    button.addEventListener('click', function () {
+        var target = button.dataset.tab;
+
+        document.querySelectorAll('.tab-btn').forEach(function (b) {
+            b.classList.toggle('is-active', b === button);
+        });
+
+        document.querySelectorAll('.tab-panel').forEach(function (panel) {
+            panel.classList.toggle('is-active', panel.dataset.tabPanel === target);
+        });
+    });
+});
 </script>
 <script src="<?= asset('/assets/js/music-player.js') ?>"></script>
+
+<script src="<?= asset('/assets/js/theme-switcher.js') ?>"></script>
 
 </body>
 </html>

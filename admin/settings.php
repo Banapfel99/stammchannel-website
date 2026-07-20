@@ -77,6 +77,12 @@ $maxCoverMb = getMaxCoverUploadMb($pdo);
     <div class="nav-brand">Stammchannel Admin</div>
 
     <div class="nav-links">
+        <select class="theme-switcher" title="Design wählen" aria-label="Design wählen">
+            <option value="aurora">Aurora</option>
+            <option value="neon">Neon Arcade</option>
+            <option value="sunset">Sunset</option>
+            <option value="mono">Mono</option>
+        </select>
         <a href="/admin/users.php">Benutzer</a>
         <a href="/dashboard.php">Website</a>
         <a href="/logout.php">Abmelden</a>
@@ -155,6 +161,8 @@ $maxCoverMb = getMaxCoverUploadMb($pdo);
     </section>
 
 </main>
+
+<script src="<?= asset('/assets/js/theme-switcher.js') ?>"></script>
 
 </body>
 </html>
