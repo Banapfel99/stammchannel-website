@@ -67,6 +67,23 @@ requireLogin();
         Du bist erfolgreich angemeldet.
     </p>
 
+    <section class="widgets-grid">
+
+        <a class="widget-card" href="/music/">
+
+            <div class="widget-icon">🎵</div>
+
+            <h3>Musik</h3>
+
+            <p>
+                Gemeinsame Playlists hören, hochladen und mit Spotify
+                kombinieren.
+            </p>
+
+        </a>
+
+    </section>
+
     <section class="server-card">
 
         <h2>

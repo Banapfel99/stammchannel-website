@@ -94,6 +94,10 @@ $users = $pdo
 
     <div class="nav-links">
 
+        <a href="/admin/settings.php">
+            Einstellungen
+        </a>
+
         <a href="/dashboard.php">
             Website
         </a>
