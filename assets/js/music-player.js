@@ -20,6 +20,9 @@
     const vinylCover = document.getElementById('vinyl-cover');
     const vinylLabel = document.getElementById('vinyl-label');
     const listenersList = document.getElementById('listeners-list');
+    const trackPosition = document.getElementById('track-position');
+    const timeCurrent = document.getElementById('time-current');
+    const timeDuration = document.getElementById('time-duration');
 
     const tracks = JSON.parse(document.getElementById('track-data').textContent || '[]');
     const csrfToken = window.MUSIC_CSRF_TOKEN;
@@ -39,6 +42,17 @@
         return '/music/file.php?type=audio&id=' + encodeURIComponent(trackId);
     }
 
+    function formatTime(seconds) {
+        if (!Number.isFinite(seconds) || seconds < 0) {
+            return '0:00';
+        }
+
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+
+        return mins + ':' + String(secs).padStart(2, '0');
+    }
+
     function setNowPlaying(trackId) {
         const track = tracks.find((t) => t.id === trackId);
         nowPlayingTitle.textContent = track
@@ -53,6 +67,13 @@
             vinylCover.hidden = true;
             vinylCover.src = '';
             vinylLabel.hidden = false;
+        }
+
+        if (trackPosition) {
+            const index = findTrackIndex(trackId);
+            trackPosition.textContent = index === -1 || tracks.length === 0
+                ? ''
+                : 'Titel ' + (index + 1) + ' von ' + tracks.length;
         }
     }
 
@@ -173,6 +194,13 @@
         if (audio.duration > 0) {
             progressBar.value = String((audio.currentTime / audio.duration) * 100);
         }
+
+        timeCurrent.textContent = formatTime(audio.currentTime);
+        timeDuration.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+        timeDuration.textContent = formatTime(audio.duration);
     });
 
     audio.addEventListener('ended', () => {

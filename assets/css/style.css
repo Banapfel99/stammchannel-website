@@ -685,11 +685,11 @@ tbody tr:last-child td {
 
 .vinyl-cover-img {
     position: absolute;
-    width: 46%;
-    height: 46%;
+    width: 64%;
+    height: 64%;
     border-radius: 50%;
     object-fit: cover;
-    box-shadow: inset 0 0 0 6px #14161d, 0 0 0 1px rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 6px #14161d, 0 0 0 1px rgba(255, 255, 255, 0.08), 0 10px 30px -12px rgba(0, 0, 0, 0.7);
     z-index: 2;
 }
 
@@ -833,6 +833,14 @@ tbody tr:last-child td {
     box-shadow: 0 0 0 3px var(--success-bg);
 }
 
+.track-position {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+}
+
 .now-playing {
     font-size: 19px;
     font-weight: 700;
@@ -840,69 +848,179 @@ tbody tr:last-child td {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 10px;
+    flex-wrap: wrap;
 }
+
+.equalizer {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 16px;
+}
+
+.equalizer span {
+    width: 3px;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent-grad);
+    animation: equalize 1s ease-in-out infinite;
+    animation-play-state: paused;
+    transform-origin: bottom;
+}
+
+.equalizer span:nth-child(1) {
+    animation-duration: 0.7s;
+}
+
+.equalizer span:nth-child(2) {
+    animation-duration: 0.9s;
+    animation-delay: 0.1s;
+}
+
+.equalizer span:nth-child(3) {
+    animation-duration: 0.6s;
+    animation-delay: 0.2s;
+}
+
+.equalizer span:nth-child(4) {
+    animation-duration: 1s;
+    animation-delay: 0.05s;
+}
+
+.music-player-hero.is-playing .equalizer span {
+    animation-play-state: running;
+}
+
+.music-player-hero:not(.is-playing) .equalizer span {
+    transform: scaleY(0.15);
+}
+
+@keyframes equalize {
+    0%, 100% {
+        transform: scaleY(0.2);
+    }
+    50% {
+        transform: scaleY(1);
+    }
+}
+
+.player-time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-faint);
+    margin-top: 6px;
+    padding: 0 2px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------- Gaming-style controls ------------------------------ */
 
 .player-controls {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     gap: 14px;
-    margin: 18px 0;
+    margin: 22px 0;
 }
 
-.player-controls button {
-    width: 52px;
-    height: 52px;
+.btn-gaming {
+    position: relative;
+    width: auto;
+    height: 64px;
+    min-width: 64px;
     margin: 0;
-    padding: 0;
-    border-radius: 50%;
-    background: var(--surface-strong);
-    border: 1px solid var(--border);
-    box-shadow: none;
-    color: var(--text);
+    padding: 0 16px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)), var(--bg-2);
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    clip-path: polygon(14% 0%, 86% 0%, 100% 22%, 100% 78%, 86% 100%, 14% 100%, 0% 78%, 0% 22%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03), 0 6px 16px -8px rgba(0, 0, 0, 0.6);
+    transition: transform 0.15s var(--ease), box-shadow 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 
-.player-controls button .icon {
+.btn-gaming .icon {
     width: 20px;
     height: 20px;
 }
 
-.player-controls button:hover {
+.btn-gaming-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: inherit;
+    opacity: 0.75;
+}
+
+.btn-gaming:hover {
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 0 0 1px rgba(124, 140, 255, 0.4), 0 12px 24px -10px rgba(124, 140, 255, 0.5), 0 0 22px rgba(124, 140, 255, 0.35);
+}
+
+.btn-gaming:active {
+    transform: translateY(0);
+}
+
+.btn-gaming.active {
+    color: #fff;
+    border-color: var(--accent-3);
+    box-shadow: 0 0 0 1px rgba(255, 107, 214, 0.5), 0 0 22px rgba(255, 107, 214, 0.45);
+}
+
+.btn-gaming-primary {
+    height: 76px;
+    min-width: 100px;
+    padding: 0 22px;
     background: var(--accent-grad);
     border-color: transparent;
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 10px 25px -10px rgba(124, 92, 255, 0.6);
+    color: #fff;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 14px 30px -10px rgba(124, 92, 255, 0.65);
 }
 
-.player-controls #btn-play {
-    width: 68px;
-    height: 68px;
-    background: var(--accent-grad);
-    box-shadow: 0 10px 30px -10px rgba(124, 92, 255, 0.65);
-}
-
-.player-controls #btn-play .icon {
+.btn-gaming-primary .icon {
     width: 26px;
     height: 26px;
 }
 
-.player-controls #btn-play .icon-pause {
+.btn-gaming-primary:hover {
+    border-color: transparent;
+    filter: brightness(1.1);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 18px 34px -10px rgba(124, 92, 255, 0.8), 0 0 30px rgba(177, 107, 255, 0.5);
+}
+
+.btn-gaming-primary .icon-pause {
     display: none;
 }
 
-.player-controls #btn-play.is-playing .icon-play {
+.btn-gaming-primary.is-playing .icon-play {
     display: none;
 }
 
-.player-controls #btn-play.is-playing .icon-pause {
+.btn-gaming-primary.is-playing .icon-pause {
     display: block;
 }
 
-.player-controls button.active {
-    background: var(--accent-grad-soft);
-    border-color: rgba(177, 107, 255, 0.5);
-    color: #e3dcff;
+.btn-gaming-primary.is-playing {
+    animation: pulseGlow 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+    0%, 100% {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 14px 30px -10px rgba(124, 92, 255, 0.65), 0 0 0 rgba(177, 107, 255, 0);
+    }
+    50% {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 14px 30px -10px rgba(124, 92, 255, 0.75), 0 0 26px rgba(177, 107, 255, 0.55);
+    }
 }
 
 .player-progress {

@@ -174,28 +174,46 @@ $trackListJson = json_encode(array_map(
 
             <div class="player-info-head">
                 <h2>Gemeinsam anhören</h2>
+                <span class="track-position" id="track-position"></span>
                 <div class="listeners" id="listeners-list" title="Hört gerade mit"></div>
             </div>
 
             <div class="now-playing">
                 <?= icon('headphones') ?>
                 <span id="now-playing-title">Kein Titel ausgewählt</span>
+                <span class="equalizer" id="equalizer">
+                    <span></span><span></span><span></span><span></span>
+                </span>
             </div>
 
             <audio id="audio-element" preload="metadata"></audio>
 
             <div class="player-progress">
                 <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
+                <div class="player-time">
+                    <span id="time-current">0:00</span>
+                    <span id="time-duration">0:00</span>
+                </div>
             </div>
 
             <div class="player-controls">
-                <button type="button" id="btn-shuffle" title="Shuffle"><?= icon('shuffle') ?></button>
-                <button type="button" id="btn-prev" title="Zurück"><?= icon('prev') ?></button>
-                <button type="button" id="btn-play" title="Play/Pause">
+                <button type="button" class="btn-gaming" id="btn-shuffle" title="Shuffle">
+                    <?= icon('shuffle') ?>
+                    <span class="btn-gaming-label">Shuffle</span>
+                </button>
+                <button type="button" class="btn-gaming" id="btn-prev" title="Zurück">
+                    <?= icon('prev') ?>
+                    <span class="btn-gaming-label">Zurück</span>
+                </button>
+                <button type="button" class="btn-gaming btn-gaming-primary" id="btn-play" title="Play/Pause">
                     <span class="icon-play"><?= icon('play') ?></span>
                     <span class="icon-pause"><?= icon('pause') ?></span>
+                    <span class="btn-gaming-label">Play</span>
                 </button>
-                <button type="button" id="btn-next" title="Weiter"><?= icon('next') ?></button>
+                <button type="button" class="btn-gaming" id="btn-next" title="Weiter">
+                    <?= icon('next') ?>
+                    <span class="btn-gaming-label">Weiter</span>
+                </button>
             </div>
 
             <div class="volume-control">
