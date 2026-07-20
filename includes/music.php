@@ -23,8 +23,28 @@ const MUSIC_ALLOWED_COVER_MIME = [
     'image/webp' => 'webp',
 ];
 
-const MUSIC_MAX_AUDIO_BYTES = 60 * 1024 * 1024;
-const MUSIC_MAX_COVER_BYTES = 5 * 1024 * 1024;
+const MUSIC_DEFAULT_MAX_AUDIO_MB = 60;
+const MUSIC_DEFAULT_MAX_COVER_MB = 5;
+
+function getMaxAudioUploadMb(PDO $pdo): int
+{
+    return max(1, (int) getSetting($pdo, 'max_audio_upload_mb', (string) MUSIC_DEFAULT_MAX_AUDIO_MB));
+}
+
+function getMaxCoverUploadMb(PDO $pdo): int
+{
+    return max(1, (int) getSetting($pdo, 'max_cover_upload_mb', (string) MUSIC_DEFAULT_MAX_COVER_MB));
+}
+
+function getMaxAudioUploadBytes(PDO $pdo): int
+{
+    return getMaxAudioUploadMb($pdo) * 1024 * 1024;
+}
+
+function getMaxCoverUploadBytes(PDO $pdo): int
+{
+    return getMaxCoverUploadMb($pdo) * 1024 * 1024;
+}
 
 function ensureMusicDirectories(): void
 {

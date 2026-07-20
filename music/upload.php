@@ -5,6 +5,7 @@ declare(strict_types=1);
 require __DIR__ . '/../includes/auth.php';
 require __DIR__ . '/../includes/database.php';
 require __DIR__ . '/../includes/csrf.php';
+require __DIR__ . '/../includes/settings.php';
 require __DIR__ . '/../includes/music.php';
 
 requireLogin();
@@ -47,8 +48,10 @@ if (!isset($_FILES['audio']) || $_FILES['audio']['error'] !== UPLOAD_ERR_OK) {
 
 $audioFile = $_FILES['audio'];
 
-if ($audioFile['size'] > MUSIC_MAX_AUDIO_BYTES) {
-    redirectWithError($playlistId, 'Die Audiodatei ist zu groß (max. 60 MB).');
+$maxAudioBytes = getMaxAudioUploadBytes($pdo);
+
+if ($audioFile['size'] > $maxAudioBytes) {
+    redirectWithError($playlistId, 'Die Audiodatei ist zu groß (max. ' . getMaxAudioUploadMb($pdo) . ' MB).');
 }
 
 $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -64,8 +67,10 @@ $coverMime = null;
 if (isset($_FILES['cover']) && $_FILES['cover']['error'] === UPLOAD_ERR_OK) {
     $coverFile = $_FILES['cover'];
 
-    if ($coverFile['size'] > MUSIC_MAX_COVER_BYTES) {
-        redirectWithError($playlistId, 'Das Cover-Bild ist zu groß (max. 5 MB).');
+    $maxCoverBytes = getMaxCoverUploadBytes($pdo);
+
+    if ($coverFile['size'] > $maxCoverBytes) {
+        redirectWithError($playlistId, 'Das Cover-Bild ist zu groß (max. ' . getMaxCoverUploadMb($pdo) . ' MB).');
     }
 
     $detectedCoverMime = (string) $finfo->file($coverFile['tmp_name']);

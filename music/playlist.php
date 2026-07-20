@@ -185,6 +185,7 @@ $trackListJson = json_encode(array_map(
             <tr>
                 <th>Cover</th>
                 <th>Titel</th>
+                <th>Typ</th>
                 <th>Hochgeladen von</th>
                 <th>Wiedergaben</th>
                 <th colspan="2"></th>
@@ -207,6 +208,7 @@ $trackListJson = json_encode(array_map(
                         <?php endif; ?>
                     </td>
                     <td><?= htmlspecialchars($track['title']) ?></td>
+                    <td>Eigener Upload</td>
                     <td><?= htmlspecialchars($track['uploader_username']) ?></td>
                     <td><?= (int) $track['play_count'] ?></td>
                     <td>
@@ -237,8 +239,52 @@ $trackListJson = json_encode(array_map(
                 </tr>
             <?php endforeach; ?>
 
-            <?php if ($tracks === []): ?>
-                <tr><td colspan="6" class="muted">Noch keine Titel hochgeladen.</td></tr>
+            <?php foreach ($spotifyLinks as $link): ?>
+                <tr>
+                    <td>
+                        <div class="track-cover track-cover-placeholder spotify-icon">🟢</div>
+                    </td>
+                    <td>
+                        <a href="<?= htmlspecialchars($link['spotify_url']) ?>" target="_blank" rel="noopener noreferrer">
+                            Spotify-<?= htmlspecialchars(ucfirst($link['spotify_type'])) ?> öffnen
+                        </a>
+                        <details>
+                            <summary>Vorschau</summary>
+                            <iframe
+                                src="<?= htmlspecialchars(spotifyEmbedUrl($link['spotify_type'], $link['spotify_ref_id'])) ?>"
+                                width="100%"
+                                height="152"
+                                frameborder="0"
+                                allow="encrypted-media"
+                                loading="lazy"
+                            ></iframe>
+                        </details>
+                    </td>
+                    <td>Spotify</td>
+                    <td><?= htmlspecialchars($link['added_by_username']) ?></td>
+                    <td>–</td>
+                    <td></td>
+                    <td>
+                        <?php if ($canManage || (int) $link['added_by'] === $userId): ?>
+                            <form
+                                method="post"
+                                action="/music/delete.php"
+                                class="inline-form"
+                                onsubmit="return confirm('Spotify-Link wirklich entfernen?');"
+                            >
+                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                                <input type="hidden" name="target" value="spotify">
+                                <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
+                                <input type="hidden" name="link_id" value="<?= (int) $link['id'] ?>">
+                                <button type="submit" class="btn-danger">Entfernen</button>
+                            </form>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+
+            <?php if ($tracks === [] && $spotifyLinks === []): ?>
+                <tr><td colspan="7" class="muted">Noch keine Titel oder Spotify-Links vorhanden.</td></tr>
             <?php endif; ?>
 
             </tbody>
@@ -263,10 +309,10 @@ $trackListJson = json_encode(array_map(
             <label>Titel</label>
             <input type="text" name="title" maxlength="150" required>
 
-            <label>Audiodatei (mp3, m4a, aac, ogg, wav)</label>
+            <label>Audiodatei (mp3, m4a, aac, ogg, wav) — max. <?= getMaxAudioUploadMb($pdo) ?> MB</label>
             <input type="file" name="audio" accept="audio/*" required>
 
-            <label>Cover (optional, jpg/png/webp)</label>
+            <label>Cover (optional, jpg/png/webp) — max. <?= getMaxCoverUploadMb($pdo) ?> MB</label>
             <input type="file" name="cover" accept="image/*">
 
             <button type="submit">Hochladen</button>
@@ -281,7 +327,8 @@ $trackListJson = json_encode(array_map(
 
         <p class="muted">
             Füge einen Spotify-Playlist-, Album- oder Titel-Link hinzu, um ihn
-            zusammen mit den hochgeladenen Titeln in dieser Playlist anzuzeigen.
+            zusammen mit den hochgeladenen Titeln in der Tabelle oben
+            anzuzeigen.
         </p>
 
         <form method="post">
@@ -298,37 +345,6 @@ $trackListJson = json_encode(array_map(
 
             <button type="submit">Hinzufügen</button>
         </form>
-
-        <?php foreach ($spotifyLinks as $link): ?>
-            <div class="spotify-embed">
-                <p class="muted">
-                    Hinzugefügt von <?= htmlspecialchars($link['added_by_username']) ?>
-
-                    <?php if ($canManage || (int) $link['added_by'] === $userId): ?>
-                        <form
-                            method="post"
-                            action="/music/delete.php"
-                            class="inline-form"
-                            onsubmit="return confirm('Spotify-Link wirklich entfernen?');"
-                        >
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                            <input type="hidden" name="target" value="spotify">
-                            <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
-                            <input type="hidden" name="link_id" value="<?= (int) $link['id'] ?>">
-                            <button type="submit" class="btn-danger btn-small">Entfernen</button>
-                        </form>
-                    <?php endif; ?>
-                </p>
-                <iframe
-                    src="<?= htmlspecialchars(spotifyEmbedUrl($link['spotify_type'], $link['spotify_ref_id'])) ?>"
-                    width="100%"
-                    height="152"
-                    frameborder="0"
-                    allow="encrypted-media"
-                    loading="lazy"
-                ></iframe>
-            </div>
-        <?php endforeach; ?>
 
     </section>
 

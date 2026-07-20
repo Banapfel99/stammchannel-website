@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS app_settings (
 INSERT IGNORE INTO app_settings (setting_key, setting_value)
 VALUES ('max_playlists_per_user', '3');
 
+INSERT IGNORE INTO app_settings (setting_key, setting_value)
+VALUES ('max_audio_upload_mb', '60');
+
+INSERT IGNORE INTO app_settings (setting_key, setting_value)
+VALUES ('max_cover_upload_mb', '5');
+
 CREATE TABLE IF NOT EXISTS playlists (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     owner_id INT UNSIGNED NOT NULL,

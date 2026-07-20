@@ -34,3 +34,5 @@ function getMaxPlaylistsPerUser(PDO $pdo): int
 {
     return max(1, (int) getSetting($pdo, 'max_playlists_per_user', '3'));
 }
+
+
