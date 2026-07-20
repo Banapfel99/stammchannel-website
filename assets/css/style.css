@@ -451,7 +451,7 @@ button:active,
 }
 
 .music-page.content {
-    max-width: 1440px;
+    max-width: min(1760px, 96vw);
 }
 
 .content > p {
@@ -1029,9 +1029,10 @@ tbody tr:last-child td {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: minmax(240px, 320px) minmax(280px, 420px) minmax(240px, 320px);
+    grid-template-columns: minmax(260px, 1fr) minmax(300px, 460px) minmax(260px, 1fr);
     grid-template-areas: "tracks player listen";
     align-items: start;
+    justify-items: stretch;
     gap: 28px;
 }
 
@@ -1315,7 +1316,11 @@ tbody tr:last-child td {
     z-index: 1;
     display: flex;
     align-items: center;
-    gap: 14px;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
     color: var(--text-muted);
 }
 
@@ -1327,6 +1332,7 @@ tbody tr:last-child td {
 
 .hero-volume-bar input[type="range"] {
     flex: 1;
+    max-width: 240px;
 }
 
 /* --------------------------------- Track list --------------------------------- */
