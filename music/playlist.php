@@ -8,6 +8,7 @@ require __DIR__ . '/../includes/csrf.php';
 require __DIR__ . '/../includes/settings.php';
 require __DIR__ . '/../includes/music.php';
 require __DIR__ . '/../includes/icons.php';
+require __DIR__ . '/../includes/assets.php';
 
 requireLogin();
 
@@ -112,7 +113,7 @@ $trackListJson = json_encode(array_map(
 
     <link
         rel="stylesheet"
-        href="/assets/css/style.css"
+        href="<?= asset('/assets/css/style.css') ?>"
     >
 </head>
 
@@ -387,7 +388,7 @@ $trackListJson = json_encode(array_map(
 <script>
 window.MUSIC_CSRF_TOKEN = <?= json_encode(getCsrfToken(), JSON_THROW_ON_ERROR) ?>;
 </script>
-<script src="/assets/js/music-player.js"></script>
+<script src="<?= asset('/assets/js/music-player.js') ?>"></script>
 
 </body>
 </html>

@@ -213,11 +213,13 @@ function requireMusicSchema(PDO $pdo): void
         return;
     }
 
+    require_once __DIR__ . '/assets.php';
+
     http_response_code(503);
 
     echo '<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">'
         . '<title>Musik nicht verfügbar</title>'
-        . '<link rel="stylesheet" href="/assets/css/style.css"></head><body>'
+        . '<link rel="stylesheet" href="' . htmlspecialchars(asset('/assets/css/style.css')) . '"></head><body>'
         . '<main class="content"><h1>Musik-Funktion ist noch nicht eingerichtet</h1>'
         . '<p>Die Datenbanktabellen für das Musik-Widget fehlen. Bitte führe '
         . '<code>database/music_schema.sql</code> einmalig gegen die Datenbank aus, '

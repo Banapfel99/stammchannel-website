@@ -6,6 +6,7 @@ require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/database.php';
 require __DIR__ . '/includes/csrf.php';
 require __DIR__ . '/includes/icons.php';
+require __DIR__ . '/includes/assets.php';
 
 if (isLoggedIn()) {
     header('Location: /dashboard.php');
@@ -65,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <link
         rel="stylesheet"
-        href="/assets/css/style.css"
+        href="<?= asset('/assets/css/style.css') ?>"
     >
 </head>
 

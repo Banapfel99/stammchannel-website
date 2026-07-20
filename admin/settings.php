@@ -8,6 +8,7 @@ require __DIR__ . '/../includes/csrf.php';
 require __DIR__ . '/../includes/settings.php';
 require __DIR__ . '/../includes/music.php';
 require __DIR__ . '/../includes/icons.php';
+require __DIR__ . '/../includes/assets.php';
 
 requireAdmin();
 
@@ -65,7 +66,7 @@ $maxCoverMb = getMaxCoverUploadMb($pdo);
 
     <link
         rel="stylesheet"
-        href="/assets/css/style.css"
+        href="<?= asset('/assets/css/style.css') ?>"
     >
 </head>
 
