@@ -171,6 +171,27 @@ function getActiveListeners(PDO $pdo, int $playlistId, int $thresholdSeconds = 1
     }
 }
 
+function getRecentListenActivity(PDO $pdo, int $playlistId, int $limit = 6): array
+{
+    try {
+        $statement = $pdo->prepare(
+            'SELECT u.username, lp.last_seen
+             FROM listen_presence lp
+             JOIN users u ON u.id = lp.user_id
+             WHERE lp.playlist_id = :playlist_id
+             ORDER BY lp.last_seen DESC
+             LIMIT :limit'
+        );
+        $statement->bindValue('playlist_id', $playlistId, PDO::PARAM_INT);
+        $statement->bindValue('limit', $limit, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
 function musicSchemaReady(PDO $pdo): bool
 {
     static $ready = null;

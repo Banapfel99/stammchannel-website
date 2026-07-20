@@ -62,6 +62,13 @@ if ($action === 'state') {
             'server_time' => date('Y-m-d H:i:s'),
         ],
         'listeners' => getActiveListeners($pdo, $playlistId),
+        'activity' => array_map(
+            static fn (array $row): array => [
+                'username' => $row['username'],
+                'last_seen' => $row['last_seen'],
+            ],
+            getRecentListenActivity($pdo, $playlistId)
+        ),
     ]);
 }
 

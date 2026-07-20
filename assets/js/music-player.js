@@ -13,20 +13,26 @@
     const nowPlayingUploader = document.getElementById('now-playing-uploader');
     const progressBar = document.getElementById('progress-bar');
     const syncStatus = document.getElementById('sync-status');
+    const syncStatusText = document.getElementById('sync-status-text');
     const btnPlay = document.getElementById('btn-play');
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
     const btnShuffle = document.getElementById('btn-shuffle');
+    const btnRepeat = document.getElementById('btn-repeat');
     const volumeBar = document.getElementById('volume-bar');
     const vinylCover = document.getElementById('vinyl-cover');
     const vinylLabel = document.getElementById('vinyl-label');
     const listenersList = document.getElementById('listeners-list');
+    const activityList = document.getElementById('activity-list');
     const trackPosition = document.getElementById('track-position');
     const timeCurrent = document.getElementById('time-current');
     const timeDuration = document.getElementById('time-duration');
 
     const tracks = JSON.parse(document.getElementById('track-data').textContent || '[]');
     const csrfToken = window.MUSIC_CSRF_TOKEN;
+    const avatarColors = ['#ff8a3d', '#ff6b57', '#ffb454', '#34d399', '#22c1ff', '#b16bff'];
+
+    let repeat = false;
 
     let currentTrackId = null;
     let isPlaying = false;
@@ -93,15 +99,62 @@
             return;
         }
 
-        listenersList.hidden = false;
-        listenersList.innerHTML = listeners
+    function avatarColorFor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+        }
+        return avatarColors[hash % avatarColors.length];
+    }
+
+    function renderListeners(listeners) {
+        if (!Array.isArray(listeners) || listeners.length === 0) {
+            listenersList.innerHTML = '';
+            return;
+        }
+
+        const maxVisible = 4;
+        const visible = listeners.slice(0, maxVisible);
+        const overflow = listeners.length - visible.length;
+
+        listenersList.innerHTML = visible
             .map((name) => {
                 const safeName = String(name).replace(/[<>&]/g, '');
                 const initial = safeName.charAt(0).toUpperCase() || '?';
-                return '<span class="listener-chip" title="' + safeName + ' hört mit">'
-                    + '<span class="listener-avatar">' + initial + '</span>'
-                    + safeName
+                return '<span class="listener-avatar" title="' + safeName + ' hört mit" style="background:' + avatarColorFor(safeName) + '">'
+                    + initial
                     + '</span>';
+            })
+            .join('') + (overflow > 0 ? '<span class="listener-avatar listener-avatar-overflow">+' + overflow + '</span>' : '');
+    }
+
+    function formatRelativeTime(dateString) {
+        const then = new Date(dateString.replace(' ', 'T') + 'Z').getTime();
+        const diffMinutes = Math.max(0, Math.round((Date.now() - then) / 60000));
+
+        if (diffMinutes < 1) {
+            return 'gerade eben';
+        }
+
+        return 'vor ' + diffMinutes + ' Min.';
+    }
+
+    function renderActivity(activity) {
+        if (!activityList) {
+            return;
+        }
+
+        if (!Array.isArray(activity) || activity.length === 0) {
+            activityList.innerHTML = '<li class="muted">Noch keine Aktivität.</li>';
+            return;
+        }
+
+        activityList.innerHTML = activity
+            .map((entry) => {
+                const safeName = String(entry.username).replace(/[<>&]/g, '');
+                return '<li><span class="activity-dot"></span>'
+                    + '<span class="activity-text"><strong>' + safeName + '</strong> ist beigetreten</span>'
+                    + '<span class="activity-time">' + formatRelativeTime(entry.last_seen) + '</span></li>';
             })
             .join('');
     }
@@ -213,6 +266,12 @@
     });
 
     audio.addEventListener('ended', () => {
+        if (repeat) {
+            loadTrack(currentTrackId, true);
+            broadcastState();
+            return;
+        }
+
         const nextId = pickNextTrackId(1);
         loadTrack(nextId, true);
         broadcastState();
@@ -242,6 +301,13 @@
         btnShuffle.classList.toggle('active', shuffle);
         broadcastState();
     });
+
+    if (btnRepeat) {
+        btnRepeat.addEventListener('click', () => {
+            repeat = !repeat;
+            btnRepeat.classList.toggle('active', repeat);
+        });
+    }
 
     volumeBar.addEventListener('input', () => {
         const value = Number(volumeBar.value);
@@ -290,7 +356,9 @@
         }
 
         syncStatus.classList.remove('is-error');
-        syncStatus.title = 'Synchronisiert';
+        if (syncStatusText) {
+            syncStatusText.textContent = 'Synchronisiert';
+        }
         suppressSync = false;
     }
 
@@ -303,13 +371,82 @@
                 }
 
                 renderListeners(data.listeners);
+                renderActivity(data.activity);
             })
             .catch(() => {
                 syncStatus.classList.add('is-error');
-                syncStatus.title = 'Synchronisierung fehlgeschlagen';
+                if (syncStatusText) {
+                    syncStatusText.textContent = 'Sync-Fehler';
+                }
             });
     }
 
+    function initMenus() {
+        document.addEventListener('click', (event) => {
+            const toggle = event.target.closest('.menu-toggle');
+
+            if (toggle) {
+                const dropdown = toggle.parentElement.querySelector('.menu-dropdown');
+
+                if (!dropdown) {
+                    return;
+                }
+
+                const willOpen = dropdown.hidden;
+
+                document.querySelectorAll('.menu-dropdown').forEach((el) => {
+                    el.hidden = true;
+                });
+                document.querySelectorAll('.menu-toggle').forEach((el) => {
+                    el.setAttribute('aria-expanded', 'false');
+                });
+
+                dropdown.hidden = !willOpen;
+                toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                event.stopPropagation();
+                return;
+            }
+
+            if (!event.target.closest('.menu-dropdown')) {
+                document.querySelectorAll('.menu-dropdown').forEach((el) => {
+                    el.hidden = true;
+                });
+                document.querySelectorAll('.menu-toggle').forEach((el) => {
+                    el.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.menu-dropdown').forEach((el) => {
+                    el.hidden = true;
+                });
+                document.querySelectorAll('.menu-toggle').forEach((el) => {
+                    el.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+    }
+
+    function initTabs() {
+        document.querySelectorAll('.tab-btn').forEach((button) => {
+            button.addEventListener('click', () => {
+                const target = button.dataset.tab;
+
+                document.querySelectorAll('.tab-btn').forEach((b) => {
+                    b.classList.toggle('is-active', b === button);
+                });
+
+                document.querySelectorAll('.tab-panel').forEach((panel) => {
+                    panel.classList.toggle('is-active', panel.dataset.tabPanel === target);
+                });
+            });
+        });
+    }
+
+    initTabs();
+    initMenus();
     initVolume();
     pollState();
     setInterval(pollState, 2000);

@@ -147,11 +147,11 @@ $trackListJson = json_encode(array_map(
         </div>
 
         <?php if ($canManage): ?>
-            <div class="menu" id="playlist-menu">
-                <button type="button" class="btn-icon-ghost" id="playlist-menu-toggle" title="Optionen" aria-haspopup="true" aria-expanded="false">
+            <div class="menu">
+                <button type="button" class="btn-icon-ghost menu-toggle" title="Optionen" aria-haspopup="true" aria-expanded="false">
                     <?= icon('more') ?>
                 </button>
-                <div class="menu-dropdown" id="playlist-menu-dropdown" hidden>
+                <div class="menu-dropdown" hidden>
                     <form method="post" action="/music/delete.php" onsubmit="return confirm('Playlist inklusive aller Titel wirklich löschen?');">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
                         <input type="hidden" name="target" value="playlist">
@@ -179,258 +179,235 @@ $trackListJson = json_encode(array_map(
             <?php endfor; ?>
         </div>
 
-        <div class="vinyl-stage">
-            <div class="vinyl-arm" id="vinyl-arm"></div>
-            <div class="vinyl-record" id="vinyl-record">
-                <img id="vinyl-cover" class="vinyl-cover-img" src="" alt="" hidden>
-                <div class="vinyl-grooves"></div>
-                <div class="vinyl-label" id="vinyl-label"><?= icon('music') ?></div>
-                <div class="vinyl-spindle"></div>
-            </div>
-            <div class="vinyl-glow"></div>
-        </div>
+        <div class="hero-grid">
 
-        <div class="player-info">
+            <aside class="hero-col hero-col-tracks">
 
-            <div class="now-playing-block">
-                <span class="track-position" id="track-position"></span>
-                <h2 class="now-playing-title" id="now-playing-title">Kein Titel ausgewählt</h2>
-                <p class="now-playing-artist" id="now-playing-artist">
-                    <?= icon('headphones') ?>
-                    <span id="now-playing-uploader">Wähle einen Titel aus der Liste</span>
-                    <span class="equalizer" id="equalizer">
-                        <span></span><span></span><span></span><span></span>
-                    </span>
-                </p>
-            </div>
-
-            <audio id="audio-element" preload="metadata"></audio>
-
-            <div class="player-progress">
-                <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
-                <div class="player-time">
-                    <span id="time-current">0:00</span>
-                    <span id="time-duration">0:00</span>
+                <div class="tab-nav" role="tablist">
+                    <button type="button" class="tab-btn is-active" data-tab="tracks"><?= icon('music') ?> Titel</button>
+                    <button type="button" class="tab-btn" data-tab="upload"><?= icon('upload') ?> Hochladen</button>
+                    <button type="button" class="tab-btn" data-tab="spotify"><?= icon('spotify') ?> Spotify</button>
                 </div>
-            </div>
 
-            <div class="player-controls">
-                <button type="button" class="btn-gaming" id="btn-shuffle" title="Shuffle">
-                    <?= icon('shuffle') ?>
-                    <span class="btn-gaming-label">Shuffle</span>
-                </button>
-                <button type="button" class="btn-gaming" id="btn-prev" title="Zurück">
-                    <?= icon('prev') ?>
-                    <span class="btn-gaming-label">Zurück</span>
-                </button>
-                <button type="button" class="btn-gaming btn-gaming-primary" id="btn-play" title="Play/Pause">
-                    <span class="icon-play"><?= icon('play') ?></span>
-                    <span class="icon-pause"><?= icon('pause') ?></span>
-                </button>
-                <button type="button" class="btn-gaming" id="btn-next" title="Weiter">
-                    <?= icon('next') ?>
-                    <span class="btn-gaming-label">Weiter</span>
-                </button>
-            </div>
+                <div class="tab-panel is-active" data-tab-panel="tracks">
 
-            <div class="volume-control">
-                <?= icon('volume') ?>
-                <input type="range" id="volume-bar" min="0" max="100" value="80" step="1">
-            </div>
+                    <h2 class="panel-heading">Titel (<?= count($tracks) + count($spotifyLinks) ?>)</h2>
 
-            <div class="listen-together" id="listen-together">
-                <div class="listen-together-status">
-                    <span class="live-dot" aria-hidden="true"></span>
-                    <span>Gemeinsam anhören</span>
-                    <span class="sync-dot" id="sync-status" title="Synchronisiert"></span>
-                </div>
-                <div class="listeners" id="listeners-list" title="Hört gerade mit" hidden></div>
-            </div>
+                    <div class="track-list">
 
-        </div>
+                        <?php foreach ($tracks as $track): ?>
+                            <div class="track-row" data-track-id="<?= (int) $track['id'] ?>">
+                                <button type="button" class="track-row-play btn-play-track" data-track-id="<?= (int) $track['id'] ?>" title="Abspielen">
+                                    <?php if ($track['cover_filename'] !== null): ?>
+                                        <img class="track-row-cover" src="/music/file.php?type=cover&id=<?= (int) $track['id'] ?>" alt="">
+                                    <?php else: ?>
+                                        <span class="track-row-cover track-row-cover-placeholder"><?= icon('music') ?></span>
+                                    <?php endif; ?>
+                                    <span class="track-row-play-icon"><?= icon('play') ?></span>
+                                </button>
+                                <div class="track-row-info">
+                                    <span class="track-row-title"><?= htmlspecialchars($track['title']) ?></span>
+                                    <span class="track-row-meta">Hochgeladen von <?= htmlspecialchars($track['uploader_username']) ?></span>
+                                </div>
+                                <div class="menu track-row-menu">
+                                    <button type="button" class="btn-icon-ghost btn-icon-ghost-sm menu-toggle" title="Optionen" aria-haspopup="true" aria-expanded="false">
+                                        <?= icon('more') ?>
+                                    </button>
+                                    <div class="menu-dropdown" hidden>
+                                        <button type="button" class="menu-item btn-play-track" data-track-id="<?= (int) $track['id'] ?>"><?= icon('play') ?> Abspielen</button>
+                                        <?php if ($canManage || (int) $track['uploader_id'] === $userId): ?>
+                                            <form method="post" action="/music/delete.php" onsubmit="return confirm('Titel wirklich löschen?');">
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                                                <input type="hidden" name="target" value="track">
+                                                <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
+                                                <input type="hidden" name="track_id" value="<?= (int) $track['id'] ?>">
+                                                <button type="submit" class="menu-item menu-item-danger"><?= icon('trash') ?> Löschen</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
 
-    </section>
+                        <?php foreach ($spotifyLinks as $link): ?>
+                            <div class="track-row">
+                                <a class="track-row-play" href="<?= htmlspecialchars($link['spotify_url']) ?>" target="_blank" rel="noopener noreferrer" title="Auf Spotify öffnen">
+                                    <span class="track-row-cover track-row-cover-placeholder spotify-icon"><?= icon('spotify') ?></span>
+                                </a>
+                                <div class="track-row-info">
+                                    <a class="track-row-title" href="<?= htmlspecialchars($link['spotify_url']) ?>" target="_blank" rel="noopener noreferrer">
+                                        Spotify-<?= htmlspecialchars(ucfirst($link['spotify_type'])) ?>
+                                    </a>
+                                    <span class="track-row-meta">Hinzugefügt von <?= htmlspecialchars($link['added_by_username']) ?></span>
+                                </div>
+                                <div class="menu track-row-menu">
+                                    <button type="button" class="btn-icon-ghost btn-icon-ghost-sm menu-toggle" title="Optionen" aria-haspopup="true" aria-expanded="false">
+                                        <?= icon('more') ?>
+                                    </button>
+                                    <div class="menu-dropdown" hidden>
+                                        <a class="menu-item" href="<?= htmlspecialchars($link['spotify_url']) ?>" target="_blank" rel="noopener noreferrer"><?= icon('link') ?> Öffnen</a>
+                                        <?php if ($canManage || (int) $link['added_by'] === $userId): ?>
+                                            <form method="post" action="/music/delete.php" onsubmit="return confirm('Spotify-Link wirklich entfernen?');">
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                                                <input type="hidden" name="target" value="spotify">
+                                                <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
+                                                <input type="hidden" name="link_id" value="<?= (int) $link['id'] ?>">
+                                                <button type="submit" class="menu-item menu-item-danger"><?= icon('trash') ?> Entfernen</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
 
-
-    <section class="admin-card tab-card">
-
-        <div class="tab-nav" role="tablist">
-            <button type="button" class="tab-btn is-active" data-tab="tracks"><?= icon('music') ?> Titel</button>
-            <button type="button" class="tab-btn" data-tab="upload"><?= icon('upload') ?> Hochladen</button>
-            <button type="button" class="tab-btn" data-tab="spotify"><?= icon('spotify') ?> Spotify</button>
-        </div>
-
-        <div class="tab-panel is-active" data-tab-panel="tracks">
-
-        <h2>Titel</h2>
-
-        <table class="track-table">
-
-            <thead>
-            <tr>
-                <th>Cover</th>
-                <th>Titel</th>
-                <th>Typ</th>
-                <th>Hochgeladen von</th>
-                <th>Wiedergaben</th>
-                <th colspan="2"></th>
-            </tr>
-            </thead>
-
-            <tbody>
-
-            <?php foreach ($tracks as $track): ?>
-                <tr data-track-id="<?= (int) $track['id'] ?>">
-                    <td>
-                        <?php if ($track['cover_filename'] !== null): ?>
-                            <img
-                                class="track-cover"
-                                src="/music/file.php?type=cover&id=<?= (int) $track['id'] ?>"
-                                alt=""
-                            >
-                        <?php else: ?>
-                            <div class="track-cover track-cover-placeholder"><?= icon('music') ?></div>
+                        <?php if ($tracks === [] && $spotifyLinks === []): ?>
+                            <p class="muted">Noch keine Titel oder Spotify-Links vorhanden.</p>
                         <?php endif; ?>
-                    </td>
-                    <td><?= htmlspecialchars($track['title']) ?></td>
-                    <td><span class="badge badge-accent"><?= icon('upload') ?> Upload</span></td>
-                    <td><?= htmlspecialchars($track['uploader_username']) ?></td>
-                    <td><?= (int) $track['play_count'] ?></td>
-                    <td>
-                        <button
-                            type="button"
-                            class="btn-play-track"
-                            data-track-id="<?= (int) $track['id'] ?>"
+
+                    </div>
+
+                </div>
+
+                <div class="tab-panel" data-tab-panel="upload">
+
+                    <h2 class="panel-heading">Titel hochladen</h2>
+
+                    <form method="post" action="/music/upload.php" enctype="multipart/form-data">
+
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                        <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
+
+                        <label>Titel</label>
+                        <input type="text" name="title" maxlength="150" required>
+
+                        <label>Audiodatei (mp3, m4a, aac, ogg, wav) — max. <?= getMaxAudioUploadMb($pdo) ?> MB</label>
+                        <input type="file" name="audio" accept="audio/*" required>
+
+                        <label>Cover (optional, jpg/png/webp) — max. <?= getMaxCoverUploadMb($pdo) ?> MB</label>
+                        <input type="file" name="cover" accept="image/*">
+
+                        <button type="submit">Hochladen</button>
+
+                    </form>
+
+                </div>
+
+                <div class="tab-panel" data-tab-panel="spotify">
+
+                    <h2 class="panel-heading">Spotify kombinieren</h2>
+
+                    <p class="muted">
+                        Füge einen Spotify-Playlist-, Album- oder Titel-Link hinzu, um ihn
+                        zusammen mit den hochgeladenen Titeln in der Liste anzuzeigen.
+                    </p>
+
+                    <form method="post">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
+                        <input type="hidden" name="form" value="spotify">
+
+                        <label>Spotify-Link</label>
+                        <input
+                            type="url"
+                            name="spotify_url"
+                            placeholder="https://open.spotify.com/playlist/..."
+                            required
                         >
-                            Abspielen
-                        </button>
-                    </td>
-                    <td>
-                        <?php if ($canManage || (int) $track['uploader_id'] === $userId): ?>
-                            <form
-                                method="post"
-                                action="/music/delete.php"
-                                class="inline-form"
-                                onsubmit="return confirm('Titel wirklich löschen?');"
-                            >
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                                <input type="hidden" name="target" value="track">
-                                <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
-                                <input type="hidden" name="track_id" value="<?= (int) $track['id'] ?>">
-                                <button type="submit" class="btn-danger">Löschen</button>
-                            </form>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
 
-            <?php foreach ($spotifyLinks as $link): ?>
-                <tr>
-                    <td>
-                        <div class="track-cover track-cover-placeholder spotify-icon"><?= icon('spotify') ?></div>
-                    </td>
-                    <td>
-                        <a href="<?= htmlspecialchars($link['spotify_url']) ?>" target="_blank" rel="noopener noreferrer">
-                            Spotify-<?= htmlspecialchars(ucfirst($link['spotify_type'])) ?> öffnen
-                        </a>
-                        <details>
-                            <summary>Vorschau</summary>
-                            <iframe
-                                src="<?= htmlspecialchars(spotifyEmbedUrl($link['spotify_type'], $link['spotify_ref_id'])) ?>"
-                                width="100%"
-                                height="152"
-                                frameborder="0"
-                                allow="encrypted-media"
-                                loading="lazy"
-                            ></iframe>
-                        </details>
-                    </td>
-                    <td><span class="badge badge-spotify"><?= icon('spotify') ?> Spotify</span></td>
-                    <td><?= htmlspecialchars($link['added_by_username']) ?></td>
-                    <td>–</td>
-                    <td></td>
-                    <td>
-                        <?php if ($canManage || (int) $link['added_by'] === $userId): ?>
-                            <form
-                                method="post"
-                                action="/music/delete.php"
-                                class="inline-form"
-                                onsubmit="return confirm('Spotify-Link wirklich entfernen?');"
-                            >
-                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-                                <input type="hidden" name="target" value="spotify">
-                                <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
-                                <input type="hidden" name="link_id" value="<?= (int) $link['id'] ?>">
-                                <button type="submit" class="btn-danger">Entfernen</button>
-                            </form>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
+                        <button type="submit">Hinzufügen</button>
+                    </form>
 
-            <?php if ($tracks === [] && $spotifyLinks === []): ?>
-                <tr><td colspan="7" class="muted">Noch keine Titel oder Spotify-Links vorhanden.</td></tr>
-            <?php endif; ?>
+                </div>
 
-            </tbody>
+            </aside>
 
-        </table>
+            <div class="hero-col hero-col-player">
 
-        </div>
+                <div class="vinyl-stage">
+                    <div class="vinyl-arm" id="vinyl-arm"></div>
+                    <div class="vinyl-record" id="vinyl-record">
+                        <img id="vinyl-cover" class="vinyl-cover-img" src="" alt="" hidden>
+                        <div class="vinyl-grooves"></div>
+                        <div class="vinyl-label" id="vinyl-label"><?= icon('music') ?></div>
+                        <div class="vinyl-spindle"></div>
+                    </div>
+                    <div class="vinyl-glow"></div>
+                </div>
 
-        <div class="tab-panel" data-tab-panel="upload">
+                <div class="now-playing-block">
+                    <span class="track-position" id="track-position"></span>
+                    <h2 class="now-playing-title" id="now-playing-title">Kein Titel ausgewählt</h2>
+                    <p class="now-playing-artist" id="now-playing-artist">
+                        <?= icon('headphones') ?>
+                        <span id="now-playing-uploader">Wähle einen Titel aus der Liste</span>
+                        <span class="equalizer" id="equalizer">
+                            <span></span><span></span><span></span><span></span>
+                        </span>
+                    </p>
+                </div>
 
-        <h2>Titel hochladen</h2>
+                <audio id="audio-element" preload="metadata"></audio>
 
-        <form
-            method="post"
-            action="/music/upload.php"
-            enctype="multipart/form-data"
-        >
+                <div class="player-progress">
+                    <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
+                    <div class="player-time">
+                        <span id="time-current">0:00</span>
+                        <span id="time-duration">0:00</span>
+                    </div>
+                </div>
 
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-            <input type="hidden" name="playlist_id" value="<?= $playlistId ?>">
+                <div class="player-controls">
+                    <button type="button" class="btn-gaming" id="btn-shuffle" title="Shuffle">
+                        <?= icon('shuffle') ?>
+                        <span class="btn-gaming-label">Shuffle</span>
+                    </button>
+                    <button type="button" class="btn-gaming" id="btn-prev" title="Zurück">
+                        <?= icon('prev') ?>
+                        <span class="btn-gaming-label">Zurück</span>
+                    </button>
+                    <button type="button" class="btn-gaming btn-gaming-primary" id="btn-play" title="Play/Pause">
+                        <span class="icon-play"><?= icon('play') ?></span>
+                        <span class="icon-pause"><?= icon('pause') ?></span>
+                    </button>
+                    <button type="button" class="btn-gaming" id="btn-next" title="Weiter">
+                        <?= icon('next') ?>
+                        <span class="btn-gaming-label">Weiter</span>
+                    </button>
+                    <button type="button" class="btn-gaming" id="btn-repeat" title="Wiederholen">
+                        <?= icon('repeat') ?>
+                        <span class="btn-gaming-label">Wiederholen</span>
+                    </button>
+                </div>
 
-            <label>Titel</label>
-            <input type="text" name="title" maxlength="150" required>
+            </div>
 
-            <label>Audiodatei (mp3, m4a, aac, ogg, wav) — max. <?= getMaxAudioUploadMb($pdo) ?> MB</label>
-            <input type="file" name="audio" accept="audio/*" required>
+            <aside class="hero-col hero-col-listen">
 
-            <label>Cover (optional, jpg/png/webp) — max. <?= getMaxCoverUploadMb($pdo) ?> MB</label>
-            <input type="file" name="cover" accept="image/*">
+                <div class="listen-panel-head">
+                    <h2>Gemeinsam anhören</h2>
+                    <span class="live-badge"><span class="live-dot" aria-hidden="true"></span>Live</span>
+                </div>
 
-            <button type="submit">Hochladen</button>
+                <span class="sync-badge" id="sync-status"><?= icon('headphones') ?> <span id="sync-status-text">Synchronisiert</span></span>
 
-        </form>
+                <div class="avatar-group" id="listeners-list" title="Hört gerade mit"></div>
+
+                <div class="host-badges">
+                    <span class="badge badge-owner"><?= icon('crown') ?> <?= htmlspecialchars($playlist['owner_username']) ?></span>
+                    <span class="badge badge-host"><?= icon('headphones') ?> Host</span>
+                </div>
+
+                <div class="activity-feed">
+                    <h3>Aktivität</h3>
+                    <ul id="activity-list"></ul>
+                </div>
+
+            </aside>
 
         </div>
 
-        <div class="tab-panel" data-tab-panel="spotify">
-
-        <h2>Spotify kombinieren</h2>
-
-        <p class="muted">
-            Füge einen Spotify-Playlist-, Album- oder Titel-Link hinzu, um ihn
-            zusammen mit den hochgeladenen Titeln in der Tabelle oben
-            anzuzeigen.
-        </p>
-
-        <form method="post">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(getCsrfToken()) ?>">
-            <input type="hidden" name="form" value="spotify">
-
-            <label>Spotify-Link</label>
-            <input
-                type="url"
-                name="spotify_url"
-                placeholder="https://open.spotify.com/playlist/..."
-                required
-            >
-
-            <button type="submit">Hinzufügen</button>
-        </form>
-
+        <div class="hero-volume-bar">
+            <?= icon('volume') ?>
+            <input type="range" id="volume-bar" min="0" max="100" value="80" step="1">
         </div>
 
     </section>
@@ -440,53 +417,6 @@ $trackListJson = json_encode(array_map(
 <script id="track-data" type="application/json"><?= $trackListJson ?></script>
 <script>
 window.MUSIC_CSRF_TOKEN = <?= json_encode(getCsrfToken(), JSON_THROW_ON_ERROR) ?>;
-
-document.querySelectorAll('.tab-btn').forEach(function (button) {
-    button.addEventListener('click', function () {
-        var target = button.dataset.tab;
-
-        document.querySelectorAll('.tab-btn').forEach(function (b) {
-            b.classList.toggle('is-active', b === button);
-        });
-
-        document.querySelectorAll('.tab-panel').forEach(function (panel) {
-            panel.classList.toggle('is-active', panel.dataset.tabPanel === target);
-        });
-    });
-});
-
-(function () {
-    var toggle = document.getElementById('playlist-menu-toggle');
-    var dropdown = document.getElementById('playlist-menu-dropdown');
-
-    if (!toggle || !dropdown) {
-        return;
-    }
-
-    function closeMenu() {
-        dropdown.hidden = true;
-        toggle.setAttribute('aria-expanded', 'false');
-    }
-
-    toggle.addEventListener('click', function (event) {
-        event.stopPropagation();
-        var willOpen = dropdown.hidden;
-        dropdown.hidden = !willOpen;
-        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-    });
-
-    document.addEventListener('click', function (event) {
-        if (!dropdown.hidden && !dropdown.contains(event.target) && event.target !== toggle) {
-            closeMenu();
-        }
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            closeMenu();
-        }
-    });
-})();
 </script>
 <script src="<?= asset('/assets/js/music-player.js') ?>"></script>
 
