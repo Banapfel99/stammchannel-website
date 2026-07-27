@@ -9,6 +9,7 @@ require __DIR__ . '/includes/database.php';
 require __DIR__ . '/includes/csrf.php';
 require __DIR__ . '/includes/settings.php';
 require __DIR__ . '/includes/clips.php';
+require __DIR__ . '/includes/watch.php';
 
 requireLogin();
 ?>
@@ -96,6 +97,8 @@ requireLogin();
         </a>
 
         <?php require __DIR__ . '/includes/widgets/clips_widget.php'; ?>
+
+        <?php require __DIR__ . '/includes/widgets/watch_widget.php'; ?>
 
     </section>
 

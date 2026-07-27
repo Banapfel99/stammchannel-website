@@ -2178,3 +2178,530 @@ a.track-row-title {
         padding: 8px 6px;
     }
 }
+
+/* ------------------------------ Watch Together ------------------------------ */
+
+.btn-primary {
+    width: auto;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.page-head-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.page-head-actions .btn-ghost {
+    width: auto;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge-host-you {
+    background: var(--accent-grad-soft);
+    border-color: rgba(255, 107, 87, 0.35);
+    color: var(--text);
+}
+
+/* --- Overview --- */
+
+.watch-create-form {
+    margin-bottom: 26px;
+}
+
+.watch-create-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.watch-create-row {
+    display: flex;
+    gap: 10px;
+}
+
+.watch-create-row input {
+    margin: 0;
+    flex: 1;
+}
+
+.watch-create-error,
+.watch-add-error {
+    color: var(--danger);
+    font-size: 13px;
+    margin: 10px 0 0;
+}
+
+.watch-rooms-heading {
+    font-size: 18px;
+    margin: 24px 0 14px;
+}
+
+.watch-empty {
+    text-align: center;
+    padding: 44px 20px;
+    color: var(--text-muted);
+}
+
+.watch-empty .icon {
+    width: 40px;
+    height: 40px;
+    opacity: 0.4;
+    margin-bottom: 10px;
+}
+
+.watch-empty p {
+    margin: 4px 0;
+}
+
+.watch-rooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.watch-room-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.watch-room-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+}
+
+.watch-room-card-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+.watch-room-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.watch-room-card-noimg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-faint);
+    background: var(--accent-grad-soft);
+}
+
+.watch-room-card-noimg .icon {
+    width: 30px;
+    height: 30px;
+}
+
+.watch-room-card-viewers {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    backdrop-filter: blur(4px);
+}
+
+.watch-room-card-viewers .icon {
+    width: 13px;
+    height: 13px;
+}
+
+.watch-room-card-body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.watch-room-card-body h3 {
+    font-size: 15px;
+    margin: 0;
+}
+
+.watch-room-card-body p {
+    margin: 0;
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.watch-room-card-body .badge-host {
+    align-self: flex-start;
+    margin-top: 2px;
+}
+
+/* --- Room --- */
+
+.watch-room-sub {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 6px 0 0;
+}
+
+.watch-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 20px;
+    margin-top: 18px;
+    align-items: start;
+}
+
+.watch-stage {
+    min-width: 0;
+}
+
+.watch-player-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.watch-player-frame iframe,
+.watch-player-frame #watch-player {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.watch-player-empty,
+.watch-player-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    color: var(--text-muted);
+    background: var(--bg-1);
+    z-index: 2;
+}
+
+.watch-player-empty .icon {
+    width: 40px;
+    height: 40px;
+    opacity: 0.4;
+}
+
+.watch-player-empty p {
+    margin: 0;
+}
+
+.watch-now-playing {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.watch-now-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.watch-guest-hint {
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+/* Side panel: queue + chat */
+
+.watch-side {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    min-height: 420px;
+    max-height: calc(100vh - 160px);
+}
+
+.watch-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.watch-tabs .tab-btn {
+    flex: 1;
+    justify-content: center;
+}
+
+.watch-panel {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    padding: 14px;
+}
+
+.watch-panel.is-active {
+    display: flex;
+}
+
+.watch-add-form,
+.watch-chat-form {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.watch-add-form input,
+.watch-chat-form input {
+    margin: 0;
+    flex: 1;
+}
+
+.watch-add-form button,
+.watch-chat-form button {
+    width: auto;
+    margin: 0;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.watch-add-form button .icon,
+.watch-chat-form button .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.watch-queue {
+    margin-top: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.watch-queue-empty {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 13px;
+}
+
+.watch-queue-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 7px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-1);
+}
+
+.watch-queue-item.is-current {
+    border-color: rgba(255, 107, 87, 0.4);
+    background: var(--accent-grad-soft);
+}
+
+.watch-queue-thumb {
+    width: 64px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background: #000;
+}
+
+.watch-queue-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.watch-queue-title {
+    font-size: 13px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.watch-queue-meta {
+    font-size: 11.5px;
+}
+
+.watch-queue-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.watch-chat {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.watch-chat-msg {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    gap: 8px;
+    align-items: baseline;
+}
+
+.watch-chat-author {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.watch-chat-time {
+    font-size: 11px;
+}
+
+.watch-chat-body {
+    grid-column: 1 / -1;
+    font-size: 13.5px;
+    color: var(--text);
+    word-break: break-word;
+}
+
+/* --- Dashboard widget --- */
+
+.watch-widget-preview {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: #000;
+    margin-bottom: 12px;
+}
+
+.watch-widget-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.watch-widget-noimg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-faint);
+    background: var(--accent-grad-soft);
+}
+
+.watch-widget-noimg .icon {
+    width: 28px;
+    height: 28px;
+}
+
+.watch-widget-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.watch-widget-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 12px;
+}
+
+@media (max-width: 900px) {
+    .watch-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .watch-side {
+        max-height: none;
+        min-height: 0;
+    }
+
+    .watch-queue {
+        max-height: 300px;
+    }
+
+    .watch-chat {
+        max-height: 320px;
+    }
+}
+
+@media (max-width: 640px) {
+    .watch-create-row {
+        flex-direction: column;
+    }
+
+    .watch-create-row button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .watch-rooms {
+        grid-template-columns: 1fr;
+    }
+
+    .page-head-actions {
+        width: 100%;
+    }
+
+    .page-head-actions .btn-ghost {
+        flex: 1;
+        justify-content: center;
+    }
+}
