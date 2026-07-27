@@ -5,6 +5,10 @@ declare(strict_types=1);
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/icons.php';
 require __DIR__ . '/includes/assets.php';
+require __DIR__ . '/includes/database.php';
+require __DIR__ . '/includes/csrf.php';
+require __DIR__ . '/includes/settings.php';
+require __DIR__ . '/includes/clips.php';
 
 requireLogin();
 ?>
@@ -91,6 +95,8 @@ requireLogin();
 
         </a>
 
+        <?php require __DIR__ . '/includes/widgets/clips_widget.php'; ?>
+
     </section>
 
     <section class="server-card">
@@ -112,6 +118,7 @@ requireLogin();
 </main>
 
 <script src="<?= asset('/assets/js/theme-switcher.js') ?>"></script>
+<script src="<?= asset('/assets/js/clips-widget.js') ?>"></script>
 
 </body>
 </html>

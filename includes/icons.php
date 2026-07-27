@@ -31,6 +31,12 @@ function icon(string $name, string $class = 'icon'): string
         'more' => '<circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>',
         'crown' => '<path d="M3 8l4.5 3.5L12 5l4.5 6.5L21 8l-2 11H5L3 8z"/><path d="M6 21h12"/>',
         'repeat' => '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
+        'film' => '<rect x="2.5" y="4" width="19" height="16" rx="2"/><line x1="7" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="17" y2="20"/><line x1="2.5" y1="9" x2="7" y2="9"/><line x1="2.5" y1="15" x2="7" y2="15"/><line x1="17" y1="9" x2="21.5" y2="9"/><line x1="17" y1="15" x2="21.5" y2="15"/>',
+        'heart' => '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>',
+        'skull' => '<path d="M12 3a8 8 0 0 0-8 8v3l1.5 2v2.5A1.5 1.5 0 0 0 7 20h1v-2h2v2h4v-2h2v2h1a1.5 1.5 0 0 0 1.5-1.5V16L20 14v-3a8 8 0 0 0-8-8z"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><line x1="10" y1="16" x2="14" y2="16"/>',
+        'laugh' => '<circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 3 4 3 4-3 4-3"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+        'dice' => '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2"/><circle cx="16" cy="8" r="1.2"/><circle cx="8" cy="16" r="1.2"/><circle cx="16" cy="16" r="1.2"/><circle cx="12" cy="12" r="1.2"/>',
+        'external' => '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
     ];
 
     $paths = $icons[$name] ?? $icons['music'];
