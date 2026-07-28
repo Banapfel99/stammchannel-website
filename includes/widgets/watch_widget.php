@@ -12,7 +12,7 @@ $activeRooms = $watchReady ? watchListActiveRooms($pdo) : [];
 $featuredRoom = $activeRooms[0] ?? null;
 
 ?>
-<div class="widget-card watch-widget-card">
+<div class="widget-card watch-widget-card" data-href="/watch/">
 
     <div class="widget-icon"><?= icon('film') ?></div>
 

@@ -604,6 +604,10 @@ tbody tr:last-child td {
     box-shadow: var(--shadow-glow);
 }
 
+.widget-card.is-clickable {
+    cursor: pointer;
+}
+
 .widget-icon {
     display: inline-flex;
     align-items: center;
@@ -2703,5 +2707,510 @@ a.track-row-title {
     .page-head-actions .btn-ghost {
         flex: 1;
         justify-content: center;
+    }
+}
+
+/* ------------------------------- Lies of P – StammRun --------------------------- */
+
+/* Shared progress bar (widget + detail) */
+.lop-progress-track {
+    position: relative;
+    display: block;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--surface-strong);
+    overflow: hidden;
+}
+
+.lop-progress-track-lg {
+    height: 10px;
+    margin: 12px 0;
+}
+
+.lop-progress-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent-grad);
+    transition: width 0.4s var(--ease);
+}
+
+/* Dashboard widget */
+.lop-widget-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.lop-widget-players {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 14px 0;
+}
+
+.lop-progress-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 90px auto auto;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.lop-progress-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lop-progress-value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.lop-progress-deaths {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.lop-progress-deaths .icon {
+    width: 14px;
+    height: 14px;
+}
+
+.lop-widget-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 12px;
+}
+
+/* Avatar chip */
+.lop-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: hsl(var(--lop-hue, 20), 60%, 45%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+/* Empty states */
+.lop-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-faint);
+}
+
+.lop-empty .icon {
+    width: 34px;
+    height: 34px;
+    opacity: 0.6;
+}
+
+/* Recommendation bar */
+.lop-reco-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 18px 0;
+}
+
+.lop-reco {
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+}
+
+.lop-reco-missable_warning {
+    background: var(--danger-bg);
+    border-color: rgba(244, 83, 106, 0.35);
+    color: var(--text);
+}
+
+.lop-reco-next_objective {
+    background: var(--accent-grad-soft);
+    border-color: rgba(255, 138, 61, 0.3);
+}
+
+/* Overview player grid */
+.lop-player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.lop-player-card {
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.lop-player-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lop-player-ident {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.lop-player-name {
+    font-weight: 600;
+}
+
+.lop-player-area {
+    font-size: 12px;
+}
+
+.lop-player-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.lop-player-stats strong {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.lop-player-stats .icon {
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+}
+
+.lop-player-foot {
+    font-size: 12px;
+    margin: 10px 0 0;
+}
+
+/* Leaderboards */
+.lop-board-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.lop-board {
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.lop-board h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.lop-board-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lop-board-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.lop-board-rank {
+    width: 26px;
+    color: var(--text-faint);
+    font-weight: 700;
+}
+
+.lop-board-list .lop-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+}
+
+.lop-board-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lop-board-value {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Boss progress */
+.lop-boss-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lop-boss {
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.lop-boss-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.lop-boss-head h3 {
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lop-boss-empty {
+    font-size: 13px;
+    margin: 0;
+}
+
+.lop-boss-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.lop-boss-table th,
+.lop-boss-table td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+}
+
+.lop-boss-table th {
+    color: var(--text-faint);
+    font-weight: 600;
+}
+
+.lop-boss-table tr:last-child td {
+    border-bottom: none;
+}
+
+.lop-status-ok {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.lop-status-open {
+    color: var(--text-muted);
+}
+
+/* Timeline */
+.lop-timeline-switch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.lop-timeline-tab {
+    width: auto;
+}
+
+.lop-timeline-tab.is-active {
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.lop-timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 8px;
+}
+
+.lop-timeline-entry {
+    display: grid;
+    grid-template-columns: 54px 26px 1fr;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 0;
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+    margin-left: 4px;
+}
+
+.lop-timeline-time {
+    color: var(--text-faint);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.lop-timeline-emoji {
+    font-size: 15px;
+}
+
+.lop-timeline-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.lop-timeline-title {
+    font-size: 14px;
+}
+
+.lop-timeline-detail {
+    font-size: 12px;
+}
+
+/* Tracker settings + tokens */
+.lop-tracker-section {
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.lop-tracker-section:last-child {
+    border-bottom: none;
+}
+
+.lop-tracker-section h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.lop-select {
+    max-width: 320px;
+}
+
+.lop-token-form {
+    display: flex;
+    gap: 10px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+}
+
+.lop-token-form input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+}
+
+.lop-token-form button {
+    width: auto;
+    margin: 0;
+}
+
+.lop-token-reveal {
+    padding: 14px 16px;
+    margin: 12px 0;
+    background: var(--success-bg);
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    border-radius: var(--radius-sm);
+}
+
+.lop-token-reveal code {
+    display: block;
+    margin: 8px 0;
+    padding: 10px 12px;
+    background: var(--bg-0);
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+    font-size: 13px;
+}
+
+.lop-token-reveal .btn-ghost {
+    width: auto;
+}
+
+.lop-token-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.lop-token-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.lop-token-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.lop-token-name {
+    font-weight: 600;
+}
+
+.lop-token-info .muted {
+    font-size: 12px;
+}
+
+.lop-api-endpoint {
+    display: inline-block;
+    padding: 8px 12px;
+    background: var(--bg-0);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    word-break: break-all;
+}
+
+@media (max-width: 640px) {
+    .lop-player-grid,
+    .lop-board-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .lop-progress-row {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .lop-progress-value {
+        display: none;
+    }
+
+    .lop-boss-table {
+        font-size: 12px;
+    }
+
+    .lop-boss-table th:nth-child(4),
+    .lop-boss-table td:nth-child(4) {
+        display: none;
     }
 }

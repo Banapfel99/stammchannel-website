@@ -10,6 +10,7 @@ require __DIR__ . '/includes/csrf.php';
 require __DIR__ . '/includes/settings.php';
 require __DIR__ . '/includes/clips.php';
 require __DIR__ . '/includes/watch.php';
+require __DIR__ . '/includes/lies_of_p.php';
 
 requireLogin();
 ?>
@@ -100,6 +101,8 @@ requireLogin();
 
         <?php require __DIR__ . '/includes/widgets/watch_widget.php'; ?>
 
+        <?php require __DIR__ . '/includes/widgets/lies_of_p_widget.php'; ?>
+
     </section>
 
     <section class="server-card">
@@ -122,6 +125,7 @@ requireLogin();
 
 <script src="<?= asset('/assets/js/theme-switcher.js') ?>"></script>
 <script src="<?= asset('/assets/js/clips-widget.js') ?>"></script>
+<script src="<?= asset('/assets/js/dashboard.js') ?>"></script>
 
 </body>
 </html>

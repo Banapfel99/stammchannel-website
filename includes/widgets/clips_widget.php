@@ -12,7 +12,7 @@ $clipsCsrfToken = getCsrfToken();
 $dashboardClip = $clipsReady ? pickRandomClip($pdo, []) : null;
 
 ?>
-<div class="widget-card clip-widget-card" id="dashboard-clip-widget">
+<div class="widget-card clip-widget-card" id="dashboard-clip-widget" data-href="/clips/index.php">
 
     <div class="widget-icon"><?= icon('film') ?></div>
 
