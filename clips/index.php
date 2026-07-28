@@ -232,6 +232,8 @@ $csrfToken = getCsrfToken();
                     <span class="upload-progress-label" id="clip-upload-progress-label">0%</span>
                 </div>
 
+                <p class="clip-upload-error" id="clip-upload-error" hidden></p>
+
                 <button type="submit" id="clip-upload-submit"><?= icon('upload') ?> Clip hochladen</button>
             </form>
 

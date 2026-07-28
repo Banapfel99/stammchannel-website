@@ -2167,6 +2167,16 @@ a.track-row-title {
     color: var(--text-muted);
 }
 
+.clip-upload-error {
+    margin: 12px 0 0;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--danger-bg);
+    border: 1px solid rgba(244, 83, 106, 0.35);
+    color: var(--text);
+    font-size: 13px;
+}
+
 @media (max-width: 640px) {
     .clip-grid {
         grid-template-columns: 1fr;

@@ -46,12 +46,42 @@ function clipTempDir(): string
 
 function clipFfmpegBinary(): string
 {
-    return (string) (clipsAppConfig()['storage']['ffmpeg_binary'] ?? 'ffmpeg');
+    return clipResolveBinary(
+        (string) (clipsAppConfig()['storage']['ffmpeg_binary'] ?? 'ffmpeg'),
+        ['/usr/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/opt/homebrew/bin/ffmpeg']
+    );
 }
 
 function clipFfprobeBinary(): string
 {
-    return (string) (clipsAppConfig()['storage']['ffprobe_binary'] ?? 'ffprobe');
+    return clipResolveBinary(
+        (string) (clipsAppConfig()['storage']['ffprobe_binary'] ?? 'ffprobe'),
+        ['/usr/bin/ffprobe', '/usr/local/bin/ffprobe', '/opt/homebrew/bin/ffprobe']
+    );
+}
+
+/**
+ * Resolves a configured binary name to a usable path. An absolute/relative path
+ * (containing a directory separator) is trusted as-is. A bare command name is
+ * matched against a list of well-known install locations, so the tool is found
+ * even when php-fpm runs with a minimal PATH that lacks /usr/bin. Falls back to
+ * the bare name (relying on PATH) when no candidate exists.
+ *
+ * @param string[] $fallbacks
+ */
+function clipResolveBinary(string $configured, array $fallbacks): string
+{
+    if ($configured !== '' && strpbrk($configured, '/\\') !== false) {
+        return $configured;
+    }
+
+    foreach ($fallbacks as $candidate) {
+        if (is_file($candidate) && is_executable($candidate)) {
+            return $candidate;
+        }
+    }
+
+    return $configured;
 }
 
 function ensureClipDirectories(): bool
@@ -121,17 +151,38 @@ function clipRandomSeed(): float
  */
 function clipRunProcess(array $args, ?string &$stdout = null, ?string &$stderr = null): bool
 {
-    $descriptors = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
+    $stdout = '';
+    $stderr = '';
 
-    $process = proc_open($args, $descriptors, $pipes, null, null, ['bypass_shell' => true]);
+    if (!function_exists('proc_open')) {
+        $stderr = 'proc_open ist auf diesem Server deaktiviert.';
+        error_log('StammClips: ' . $stderr);
 
-    if (!is_resource($process)) {
         return false;
     }
 
-    fclose($pipes[0] ?? STDIN);
-    $stdout = stream_get_contents($pipes[1]);
-    $stderr = stream_get_contents($pipes[2]);
+    // stdin is read from /dev/null so the child never blocks waiting for input.
+    // (Windows has no /dev/null, but this deployment is Linux/nginx.)
+    $devNull = DIRECTORY_SEPARATOR === '\\' ? 'NUL' : '/dev/null';
+
+    $descriptors = [
+        0 => ['file', $devNull, 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w'],
+    ];
+
+    $process = @proc_open($args, $descriptors, $pipes, null, null, ['bypass_shell' => true]);
+
+    if (!is_resource($process)) {
+        $stderr = 'Prozess konnte nicht gestartet werden: ' . ($args[0] ?? '');
+        error_log('StammClips: ' . $stderr);
+
+        return false;
+    }
+
+    $stdout = (string) stream_get_contents($pipes[1]);
+    $stderr = (string) stream_get_contents($pipes[2]);
+
     fclose($pipes[1]);
     fclose($pipes[2]);
 
@@ -142,7 +193,8 @@ function clipRunProcess(array $args, ?string &$stdout = null, ?string &$stderr =
 
 /**
  * Probes a video file with ffprobe and returns duration/resolution, or null
- * if the file could not be read as a video.
+ * if the file could not be read as a video. Failures are logged (including the
+ * ffprobe stderr) so upload problems can be diagnosed server-side.
  *
  * @return array{duration: float, width: int, height: int}|null
  */
@@ -151,38 +203,77 @@ function clipProbeVideo(string $path): ?array
     $args = [
         clipFfprobeBinary(),
         '-v', 'error',
-        '-select_streams', 'v:0',
-        '-show_entries', 'stream=width,height:format=duration',
-        '-of', 'json',
+        '-print_format', 'json',
+        '-show_streams',
+        '-show_format',
         $path,
     ];
 
-    if (!clipRunProcess($args, $stdout, $stderr) || $stdout === null) {
+    if (!clipRunProcess($args, $stdout, $stderr) || $stdout === '') {
+        error_log('StammClips: ffprobe fehlgeschlagen für ' . $path . ' — ' . trim((string) $stderr));
+
         return null;
     }
 
     $data = json_decode($stdout, true);
 
-    if (!is_array($data) || empty($data['streams'][0])) {
+    if (!is_array($data) || empty($data['streams'])) {
+        error_log('StammClips: ffprobe lieferte keine verwertbaren Streams für ' . $path);
+
         return null;
     }
 
-    $stream = $data['streams'][0];
+    // Pick the first real video stream. Attached cover art (attached_pic) is a
+    // video-typed stream too but must be ignored, otherwise clips with embedded
+    // thumbnails would be misdetected or rejected as "keine gültige Videospur".
+    $videoStream = null;
+
+    foreach ($data['streams'] as $stream) {
+        if (($stream['codec_type'] ?? '') !== 'video') {
+            continue;
+        }
+
+        if (!empty($stream['disposition']['attached_pic'])) {
+            continue;
+        }
+
+        if (!empty($stream['width']) && !empty($stream['height'])) {
+            $videoStream = $stream;
+            break;
+        }
+    }
+
+    if ($videoStream === null) {
+        error_log('StammClips: Keine gültige Videospur in ' . $path);
+
+        return null;
+    }
+
+    // Duration usually lives in format; fall back to the video stream's own
+    // duration for containers (e.g. some MKV/AVI) that omit the format value.
     $duration = (float) ($data['format']['duration'] ?? 0);
 
-    if ($duration <= 0 || empty($stream['width']) || empty($stream['height'])) {
+    if ($duration <= 0) {
+        $duration = (float) ($videoStream['duration'] ?? 0);
+    }
+
+    if ($duration <= 0) {
+        error_log('StammClips: Konnte Videodauer nicht ermitteln für ' . $path);
+
         return null;
     }
 
     return [
         'duration' => $duration,
-        'width' => (int) $stream['width'],
-        'height' => (int) $stream['height'],
+        'width' => (int) $videoStream['width'],
+        'height' => (int) $videoStream['height'],
     ];
 }
 
 /**
  * Transcodes a source video to a web-optimized H.264/AAC MP4 capped at 1080p.
+ * A missing audio track is fine — ffmpeg simply produces a video-only MP4.
+ * Failures are logged together with the ffmpeg stderr for diagnosis.
  */
 function clipTranscodeVideo(string $input, string $output, int $maxDurationSeconds): bool
 {
@@ -201,7 +292,15 @@ function clipTranscodeVideo(string $input, string $output, int $maxDurationSecon
         $output,
     ];
 
-    return clipRunProcess($args, $stdout, $stderr) && is_file($output) && filesize($output) > 0;
+    $ok = clipRunProcess($args, $stdout, $stderr);
+
+    if (!$ok || !is_file($output) || filesize($output) === 0) {
+        error_log('StammClips: ffmpeg-Transkodierung fehlgeschlagen für ' . $input . ' — ' . trim((string) $stderr));
+
+        return false;
+    }
+
+    return true;
 }
 
 /**

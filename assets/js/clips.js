@@ -204,9 +204,32 @@
         const progressBar = document.getElementById('clip-upload-progress-bar');
         const progressLabel = document.getElementById('clip-upload-progress-label');
         const submitBtn = document.getElementById('clip-upload-submit');
+        const errorEl = document.getElementById('clip-upload-error');
+
+        function showError(message) {
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.hidden = false;
+            }
+        }
+
+        function clearError() {
+            if (errorEl) {
+                errorEl.textContent = '';
+                errorEl.hidden = true;
+            }
+        }
+
+        function resetForm() {
+            submitBtn.disabled = false;
+            progressWrap.hidden = true;
+            progressBar.style.width = '0%';
+        }
 
         form.addEventListener('submit', (event) => {
             event.preventDefault();
+
+            clearError();
 
             const formData = new FormData(form);
             const xhr = new XMLHttpRequest();
@@ -229,21 +252,50 @@
             });
 
             xhr.addEventListener('load', () => {
-                if (xhr.responseURL) {
-                    window.location.href = xhr.responseURL;
+                let data = null;
+
+                try {
+                    data = JSON.parse(xhr.responseText);
+                } catch (parseError) {
+                    data = null;
+                }
+
+                // Success: only a 2xx response with an explicit ok flag counts.
+                if (xhr.status >= 200 && xhr.status < 300 && data && data.ok) {
+                    window.location.href = (data && data.redirect) ? data.redirect : '/clips/index.php';
 
                     return;
                 }
 
-                window.location.reload();
+                // Error: NEVER navigate to xhr.responseURL — on an HTTP 500 that
+                // would open /clips/upload.php via GET and yield "Method not
+                // allowed". Instead show the message and re-enable the button.
+                const message = (data && data.error)
+                    ? data.error
+                    : ('Upload fehlgeschlagen (Fehler ' + xhr.status + '). Bitte erneut versuchen.');
+
+                // eslint-disable-next-line no-console
+                console.error('StammClips-Upload fehlgeschlagen:', xhr.status, xhr.responseText);
+
+                showError(message);
+                resetForm();
             });
 
             xhr.addEventListener('error', () => {
-                submitBtn.disabled = false;
-                progressLabel.textContent = 'Upload fehlgeschlagen. Bitte erneut versuchen.';
+                // eslint-disable-next-line no-console
+                console.error('StammClips-Upload: Netzwerkfehler.');
+                showError('Netzwerkfehler beim Upload. Bitte erneut versuchen.');
+                resetForm();
+            });
+
+            xhr.addEventListener('abort', () => {
+                showError('Upload abgebrochen.');
+                resetForm();
             });
 
             xhr.open('POST', form.action, true);
+            // Tells upload.php to answer with JSON + precise status codes.
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             xhr.send(formData);
         });
     }
